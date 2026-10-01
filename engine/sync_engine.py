@@ -31,12 +31,13 @@ def fetch_local_agy_models():
     models = []
     error = None
     try:
-        out = subprocess.check_output(["agy", "models"], stderr=subprocess.PIPE).decode("utf-8")
-        for line in out.strip().splitlines():
-            line = line.strip()
-            if not line or line.startswith("Fetching"):
+        import re
+        out = subprocess.check_output(["agy", "models"], stderr=subprocess.PIPE, timeout=5).decode("utf-8")
+        for raw_line in out.strip().splitlines():
+            line = re.sub(r'^[⠋⠙⠹⠸⠼⠴⠦⠧⠇\s]*Fetching available models\.\.\.', '', raw_line).strip()
+            if not line:
                 continue
-            parts = line.split("\t")
+            parts = re.split(r'\t+|\s{2,}', line)
             if len(parts) >= 2:
                 model_id = parts[0].strip()
                 name = parts[1].strip()
@@ -75,6 +76,80 @@ def fetch_local_agy_models():
     except Exception as e:
         error = str(e)
         print(f"Notice: agy CLI check skipped or failed ({e}).")
+    return models, error
+
+def fetch_local_ollama_models():
+    """Detects locally installed models in Ollama via HTTP endpoint or CLI."""
+    models = []
+    error = None
+    # 1. Try local Ollama HTTP API (fastest, structured)
+    try:
+        req = urllib.request.Request("http://127.0.0.1:11434/api/tags", headers={"User-Agent": "OmniBurn/1.0"})
+        with urllib.request.urlopen(req, timeout=1.5) as response:
+            data = json.loads(response.read().decode("utf-8"))
+            for m in data.get("models", []):
+                name = m.get("name", "")
+                if not name:
+                    continue
+                details = m.get("details", {})
+                param_size = details.get("parameter_size", "")
+                ctx = details.get("context_length", 131072) or 131072
+                caps = m.get("capabilities", [])
+                reasoning = "high" if "thinking" in caps else ("low" if "embedding" in caps else "medium")
+                display_name = f"{name} (Local {param_size})" if param_size else f"{name} (Local)"
+                models.append({
+                    "model_id": f"ollama/{name}",
+                    "display_name": display_name,
+                    "provider": "Ollama / Local",
+                    "harness": "Ollama (Local)",
+                    "pool_id": "local_ollama",
+                    "context_window": ctx,
+                    "input_cost_per_m": 0.0,
+                    "output_cost_per_m": 0.0,
+                    "reasoning_effort": reasoning,
+                    "speed_mode": "fast",
+                    "is_frontier": 0,
+                    "first_pass_rate_t2": 0.85,
+                    "first_pass_rate_t3": 0.50,
+                    "tasks_per_1pct_t2": 100.0,
+                    "tasks_per_1pct_t3": 50.0,
+                })
+            if models:
+                return models, None
+    except Exception as e:
+        error = str(e)
+
+    # 2. Fallback to CLI `ollama list`
+    try:
+        out = subprocess.check_output(["ollama", "list"], stderr=subprocess.PIPE, timeout=2).decode("utf-8")
+        lines = out.strip().splitlines()
+        if len(lines) > 1:
+            for line in lines[1:]:
+                parts = line.split()
+                if parts:
+                    name = parts[0].strip()
+                    models.append({
+                        "model_id": f"ollama/{name}",
+                        "display_name": f"{name} (Local)",
+                        "provider": "Ollama / Local",
+                        "harness": "Ollama (Local)",
+                        "pool_id": "local_ollama",
+                        "context_window": 131072,
+                        "input_cost_per_m": 0.0,
+                        "output_cost_per_m": 0.0,
+                        "reasoning_effort": "medium",
+                        "speed_mode": "fast",
+                        "is_frontier": 0,
+                        "first_pass_rate_t2": 0.85,
+                        "first_pass_rate_t3": 0.50,
+                        "tasks_per_1pct_t2": 100.0,
+                        "tasks_per_1pct_t3": 50.0,
+                    })
+            if models:
+                return models, None
+    except Exception as e:
+        error = str(e)
+
     return models, error
 
 def sync_models(db_path=None):
@@ -125,6 +200,46 @@ def sync_models(db_path=None):
             changes_logged.append({"event": "NEW_MODEL", "model_id": mid, "name": m["display_name"]})
         else:
             cursor.execute("UPDATE models SET last_seen = ?, is_active = 1 WHERE model_id = ?", (now_iso, mid))
+
+    # 3. Ingest local Ollama models
+    ollama_models, ollama_err = fetch_local_ollama_models()
+    if ollama_models:
+        # Ensure subscription and pool exist
+        cursor.execute("""
+            INSERT OR IGNORE INTO subscriptions (id, name, provider, monthly_cost, billing_cycle, status, description)
+            VALUES ('local-ollama', 'Local Ollama Host', 'Localhost', 0.00, 'monthly', 'active', 'Locally running open weights inference via Ollama');
+        """)
+        cursor.execute("""
+            INSERT OR IGNORE INTO quota_pools (id, sub_id, pool_name, reset_window_hours, window_type, ui_granularity_pct, current_pct_remaining, weekly_pct_remaining, last_reset)
+            VALUES ('local_ollama', 'local-ollama', 'Local GPU/CPU Inference', 720.0, 'unmetered', 1, 100, 100, ?);
+        """, (now_iso,))
+        for om in ollama_models:
+            omid = om["model_id"]
+            if omid not in existing_models:
+                cursor.execute("""
+                    INSERT INTO models (
+                        model_id, display_name, provider, harness, pool_id,
+                        context_window, input_cost_per_m, output_cost_per_m,
+                        reasoning_effort, speed_mode, is_frontier,
+                        first_pass_rate_t2, first_pass_rate_t3,
+                        tasks_per_1pct_t2, tasks_per_1pct_t3,
+                        is_active, last_seen
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?);
+                """, (
+                    omid, om["display_name"], om["provider"], om["harness"], om["pool_id"],
+                    om["context_window"], om["input_cost_per_m"], om["output_cost_per_m"],
+                    om["reasoning_effort"], om["speed_mode"], om["is_frontier"],
+                    om["first_pass_rate_t2"], om["first_pass_rate_t3"],
+                    om["tasks_per_1pct_t2"], om["tasks_per_1pct_t3"],
+                    now_iso
+                ))
+                cursor.execute("""
+                    INSERT INTO model_changelog (timestamp, event_type, model_id, details)
+                    VALUES (?, 'NEW_MODEL', ?, ?);
+                """, (now_iso, omid, f"Discovered local Ollama model: {om['display_name']}"))
+                changes_logged.append({"event": "NEW_MODEL", "model_id": omid, "name": om["display_name"]})
+            else:
+                cursor.execute("UPDATE models SET last_seen = ?, is_active = 1 WHERE model_id = ?", (now_iso, omid))
 
     # 3. Ingest OpenRouter feed for key frontier models
     openrouter_list = fetch_openrouter_models()

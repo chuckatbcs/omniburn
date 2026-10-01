@@ -22,7 +22,6 @@ from engine.golden_harness import run_golden_suite, run_all_benchmarks
 PORT = 8787
 STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DOWNLOAD_DIR = os.path.abspath(os.environ.get("OMNIBURN_DOWNLOAD_DIR", os.path.join(ROOT_DIR, ".runtime", "downloads")))
 
 def ensure_reconciled_workbook(target_path):
     try:
@@ -126,11 +125,11 @@ class OmniBurnHandler(http.server.SimpleHTTPRequestHandler):
                     self.wfile.write(f.read())
                 return
 
-        # Direct file download support from the configured local download directory.
+        # Direct file download support from root / Downloads
         if path.startswith("/download/"):
             fname = os.path.basename(path)
             cand_paths = [
-                os.path.join(DOWNLOAD_DIR, fname),
+                os.path.join(os.path.expanduser("~/Downloads"), fname),
                 os.path.join(ROOT_DIR, fname)
             ]
             for cp in cand_paths:

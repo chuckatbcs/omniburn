@@ -4,6 +4,7 @@ Database persistence module for OmniBurn.
 Provides SQLite connection management, schema initialization, and seed data.
 """
 
+import json
 import os
 import sqlite3
 from datetime import datetime, timezone
@@ -13,12 +14,21 @@ DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 def get_connection(db_path=None):
     if db_path is None:
         db_path = DB_PATH
+    needs_init = not os.path.exists(db_path)
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
+    if needs_init:
+        init_db(db_path, conn=conn)
     return conn
 
-def init_db(db_path=None):
-    conn = get_connection(db_path)
+def init_db(db_path=None, conn=None):
+    should_close = False
+    if conn is None:
+        if db_path is None:
+            db_path = DB_PATH
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        should_close = True
     cursor = conn.cursor()
 
     # 1. Subscriptions Table
@@ -167,8 +177,14 @@ def init_db(db_path=None):
 
     conn.commit()
     seed_defaults(conn)
-    conn.close()
+    if should_close:
+        conn.close()
     print(f"Database initialized successfully at: {db_path or DB_PATH}")
+    try:
+        from engine.sync_engine import sync_models
+        sync_models(db_path or DB_PATH)
+    except Exception as e:
+        print(f"Notice: Initial dynamic local discovery skipped: {e}")
 
 def seed_defaults(conn):
     cursor = conn.cursor()
@@ -180,7 +196,8 @@ def seed_defaults(conn):
         ("cursor-pro", "Cursor Pro", "Cursor", 20.00, "monthly", "active", "Includes Cursor Models pool (Composer 2.5, Grok 4.7) and Other Models pool (Claude Sonnet/Opus, GPT-5.6)"),
         ("chatgpt-plus", "ChatGPT Plus Work / Codex", "OpenAI", 20.00, "monthly", "active", "Web, Canvas, Voice, Codex with local 5h capacity ranges (Astra, Sol, Terra, Luna)"),
         ("nvidia-nim", "NVIDIA NIM Free Tier", "NVIDIA", 0.00, "monthly", "active", "1,000 monthly inference credits on build.nvidia.com (Llama 3.3, Nemotron 3.5)"),
-        ("nousresearch", "NousResearch Portal", "NousResearch", 0.00, "monthly", "active", "Community access to frontier open reasoning models (Hermes 3/4)")
+        ("nousresearch", "NousResearch Portal", "NousResearch", 0.00, "monthly", "active", "Community access to frontier open reasoning models (Hermes 3/4)"),
+        ("local-ollama", "Local Ollama Host", "Localhost", 0.00, "monthly", "active", "Locally running open weights inference via Ollama (zero marginal token cost)")
     ]
     cursor.executemany("""
     INSERT OR IGNORE INTO subscriptions (id, name, provider, monthly_cost, billing_cycle, status, description)
@@ -195,7 +212,8 @@ def seed_defaults(conn):
         ("other_models", "cursor-pro", "Other Models Pool", 720.0, "monthly_billing", 1, 100, 100, now_iso),
         ("chatgpt_local", "chatgpt-plus", "ChatGPT Local 5h Capacity", 5.0, "rolling_5h", 5, 100, 100, now_iso),
         ("nvidia_free", "nvidia-nim", "NVIDIA NIM Monthly Credits", 720.0, "monthly_billing", 1, 100, 100, now_iso),
-        ("nous_free", "nousresearch", "Nous Open Endpoints", 24.0, "daily_burstable", 1, 100, 100, now_iso)
+        ("nous_free", "nousresearch", "Nous Open Endpoints", 24.0, "daily_burstable", 1, 100, 100, now_iso),
+        ("local_ollama", "local-ollama", "Local GPU/CPU Inference", 720.0, "unmetered", 1, 100, 100, now_iso)
     ]
     cursor.executemany("""
     INSERT OR IGNORE INTO quota_pools (id, sub_id, pool_name, reset_window_hours, window_type, ui_granularity_pct, current_pct_remaining, weekly_pct_remaining, last_reset)
@@ -249,8 +267,35 @@ def seed_defaults(conn):
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     """, key_models)
 
-    # Telemetry is intentionally not bundled with the application. Import local
-    # observations through the runtime logger instead of committing user history.
+    # 5. Preload N=194 Telemetry Dataset
+    telemetry_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "antigravity_matched_telemetry_v5.jsonl")
+    if os.path.exists(telemetry_file):
+        with open(telemetry_file, "r") as f:
+            t_rows = []
+            for line in f:
+                r = json.loads(line)
+                t_rows.append((
+                    r["task_id"], r["matched_pair_id"], r["task_class"], r["model_id"],
+                    r.get("reasoning", "medium"), r["timestamp"],
+                    r.get("five_hour_before_pct", 100), r.get("five_hour_after_pct", 100),
+                    r.get("weekly_before_pct", 100), r.get("weekly_after_pct", 100),
+                    1 if r.get("completed", True) else 0,
+                    1 if r.get("first_pass_success", True) else 0,
+                    r.get("attempt_number", 1),
+                    r.get("tool_calls", 0), r.get("agent_steps", 0),
+                    r.get("input_tokens", 0), r.get("cache_tokens", 0), r.get("output_tokens", 0),
+                    r.get("wall_clock_seconds", 0.0), r.get("sanitized_description", "")
+                ))
+            cursor.executemany("""
+            INSERT OR IGNORE INTO telemetry_runs (
+                task_id, matched_pair_id, task_class, model_id, reasoning,
+                timestamp, five_hour_before_pct, five_hour_after_pct,
+                weekly_before_pct, weekly_after_pct, completed, first_pass_success,
+                attempt_number, tool_calls, agent_steps, input_tokens, cache_tokens,
+                output_tokens, wall_clock_seconds, sanitized_description
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            """, t_rows)
+            print(f"Preloaded {len(t_rows)} empirical matched telemetry runs into telemetry_runs table.")
 
     conn.commit()
 

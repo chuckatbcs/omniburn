@@ -5,8 +5,6 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
-.runtime/
-omniburn.log
 
 # Database files
 *.db
@@ -19,3 +17,17 @@ omniburn.log
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Local research and handoff export bundles
+*.xlsx
+*.zip
+PASS*.md
+chatgpt_handoff/
+chatgpt_handoff_v*/
+antigravity_*.csv
+antigravity_*.jsonl
+reconciled_*.csv
+reconciled_*.json
+export_for_chatgpt.json
+EXPORT_FOR_CHATGPT.md
+

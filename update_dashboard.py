@@ -34,7 +34,7 @@ html_content = '''<!DOCTYPE html>
             <div class="flex items-center gap-2">
               <h1 class="text-2xl font-bold tracking-tight text-[var(--foreground)]">AI Subscription Burn Tracker — Empirical v6</h1>
               <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Reconciliation v6</span>
-              <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">Local telemetry only</span>
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">N=194 Matched Telemetry</span>
             </div>
             <p class="text-sm text-[var(--muted-foreground)]">Cross-model empirical telemetry reconciling Google AI Pro, ChatGPT Plus Work / Codex, and Cursor Pro</p>
           </div>
@@ -46,6 +46,10 @@ html_content = '''<!DOCTYPE html>
         <a href="/AI_Subscription_Burn_Rate_Reconciled_v6_2026-09-23.xlsx" download class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
           Excel Workbook (v6)
+        </a>
+        <a href="/AI_Burn_Tracker_Pass5_Matched_Telemetry.zip" download class="px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 text-xs font-semibold flex items-center gap-1.5 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Full Audit Zip
         </a>
         <div class="bg-[var(--card)] px-3 py-1.5 rounded-lg border border-[var(--border)] text-xs text-[var(--muted-foreground)]">
           Monthly Spend: <span class="font-bold text-white">$59.99/mo</span>

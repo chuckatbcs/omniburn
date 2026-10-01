@@ -50,7 +50,7 @@ class TestOmniBurn(unittest.TestCase):
 
     def test_telemetry_summary(self):
         summary = get_telemetry_summary()
-        self.assertIsInstance(summary, list, "Telemetry summary should be available even when no local runs exist")
+        self.assertGreaterEqual(len(summary), 4, "Should have empirical lane summaries")
         for r in summary:
             self.assertIn("first_pass_rate_pct", r)
             self.assertIn("sec_per_completed", r)

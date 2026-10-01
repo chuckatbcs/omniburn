@@ -141,7 +141,12 @@ def classify_workload(
     signals: List[str] = []
 
     # 1. Analyze Git Workspace
-    workspace = get_git_workspace_stats(repo_path)
+    inspect_git = (repo_path is not None) or (diff_text is not None) or (not prompt_str)
+    if inspect_git:
+        workspace = get_git_workspace_stats(repo_path)
+    else:
+        workspace = {"is_git_repo": False, "modified_files": [], "file_count": 0, "additions": 0, "deletions": 0, "diff_chars": 0}
+
     if diff_text:
         workspace["diff_chars"] = len(diff_text)
         workspace["additions"] = sum(1 for l in diff_text.splitlines() if l.startswith("+") and not l.startswith("+++"))
@@ -199,10 +204,13 @@ def classify_workload(
         tier_intent_scores[4] += 5
         signals.append(f"Detected architectural keywords: {', '.join(matched_keywords[4])}")
     if matched_keywords[3]:
+        tier_intent_scores[3] += 4
         signals.append(f"Detected multi-file keywords: {', '.join(matched_keywords[3])}")
     if matched_keywords[2]:
+        tier_intent_scores[2] += 3
         signals.append(f"Detected engineering keywords: {', '.join(matched_keywords[2])}")
     if matched_keywords[1]:
+        tier_intent_scores[1] += 5
         signals.append(f"Detected micro-task keywords: {', '.join(matched_keywords[1])}")
 
     # Fallback to Tier 2 if no strong signals

@@ -9,7 +9,6 @@ Tracks retries, attempt numbers, visible batch decrements, weekly quotas, tool c
 
 import json
 import csv
-import os
 import random
 
 # Seed for deterministic reproducibility
@@ -388,19 +387,15 @@ for i, (pair_id, desc) in enumerate(TIER_3_TASKS):
             "description": desc
         })
 
-# Write generated telemetry only to an ignored runtime directory by default.
-output_dir = os.environ.get(
-    "OMNIBURN_TELEMETRY_OUTPUT_DIR",
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), ".runtime", "telemetry"),
-)
-os.makedirs(output_dir, exist_ok=True)
-jsonl_file = os.path.join(output_dir, "matched_telemetry.jsonl")
+# Write JSONL
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+jsonl_file = os.path.join(BASE_DIR, "antigravity_matched_telemetry_v5.jsonl")
 with open(jsonl_file, "w", encoding="utf-8") as f:
     for r in records:
         f.write(json.dumps(r) + "\n")
 
 # Write CSV
-csv_file = os.path.join(output_dir, "matched_telemetry.csv")
+csv_file = os.path.join(BASE_DIR, "antigravity_matched_telemetry_v5.csv")
 fieldnames = list(records[0].keys())
 with open(csv_file, "w", encoding="utf-8", newline="") as f:
     writer = csv.DictWriter(f, fieldnames=fieldnames)

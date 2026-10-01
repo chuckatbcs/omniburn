@@ -37,17 +37,12 @@ python3 calculator.py
 ```
 
 ### 4. Continuous Auto-Update (Cron or Antigravity Schedule)
-To keep models and pricing updated every morning at 8 AM, you can add a cron job using your local checkout path:
+To keep models and pricing updated every morning at 8 AM, you can add a simple cron job:
 ```bash
-0 8 * * * /usr/bin/python3 /path/to/omniburn/sync_models.py >> /tmp/omniburn_sync.log 2>&1
+0 8 * * * /usr/bin/python3 /path/to/omniburn/sync_models.py >> /tmp/ai_burn_sync.log 2>&1
+
 ```
 Or use the Antigravity `/schedule` command inside this chat!
-
-## Privacy and local data
-
-OmniBurn is designed to run locally. Runtime databases, logs, telemetry, exports, and
-subscription details should remain outside source control. Before sharing a checkout,
-review `git status` and confirm that no personal telemetry or exported workbooks are staged.
 
 ---
 

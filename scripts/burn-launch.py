@@ -21,19 +21,19 @@ import time
 import urllib.request
 import urllib.error
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-OMNIBURN_DIR = os.path.abspath(os.environ.get("OMNIBURN_DIR", os.path.join(SCRIPT_DIR, "..")))
-OMNIBURN_PORT = 8787
+OMNIBURN_DIR = os.getenv("OMNIBURN_DIR", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+OMNIBURN_PORT = int(os.getenv("OMNIBURN_PORT", 8787))
 OMNIBURN_URL = f"http://localhost:{OMNIBURN_PORT}"
 OMNIBURN_LOG = os.path.join(OMNIBURN_DIR, "omniburn.log")
 OMNIBURN_PID_FILE = "/tmp/omniburn_8787.pid"
 
-LEDGER_DIR = os.path.abspath(os.environ["BURN_LEDGER_DIR"]) if os.environ.get("BURN_LEDGER_DIR") else ""
-LEDGER_PORT = 8795
+LEDGER_DIR = os.getenv("BURN_LEDGER_DIR", os.path.expanduser("~/Apps/burn-ledger"))
+LEDGER_PORT = int(os.getenv("BURN_LEDGER_PORT", 8795))
 LEDGER_URL = f"http://localhost:{LEDGER_PORT}"
-LEDGER_LOG = os.path.join(LEDGER_DIR, "burn-ledger.log") if LEDGER_DIR else ""
+LEDGER_LOG = os.path.join(LEDGER_DIR, "burn-ledger.log")
 LEDGER_PID_FILE = "/tmp/burn_ledger_8795.pid"
-LEDGER_VENV_UVICORN = os.path.join(LEDGER_DIR, ".venv/bin/uvicorn") if LEDGER_DIR else ""
+LEDGER_VENV_UVICORN = os.path.join(LEDGER_DIR, ".venv/bin/uvicorn")
+
 
 
 def is_port_open(port: int) -> bool:
@@ -146,9 +146,6 @@ def start_omniburn() -> bool:
 
 
 def start_burn_ledger() -> bool:
-    if not LEDGER_DIR:
-        print("  • Burn Ledger is unavailable; set BURN_LEDGER_DIR to enable the paired launcher.")
-        return False
     health_url = f"{LEDGER_URL}/api/health"
     if is_port_open(LEDGER_PORT) and check_http_health(health_url):
         pid = find_pid_by_port(LEDGER_PORT)
@@ -217,7 +214,7 @@ def cmd_status():
     print("--------------------------------------------------------------------------")
 
     # 2. Burn Ledger
-    ledger_port_open = bool(LEDGER_DIR) and is_port_open(LEDGER_PORT)
+    ledger_port_open = is_port_open(LEDGER_PORT)
     ledger_health = check_http_health(f"{LEDGER_URL}/api/health") if ledger_port_open else False
     ledger_pid = find_pid_by_port(LEDGER_PORT) or get_pid_from_file(LEDGER_PID_FILE)
     ledger_status = "ONLINE (Healthy)" if ledger_health else "LISTENING" if ledger_port_open else "OFFLINE"
