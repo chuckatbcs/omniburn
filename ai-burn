@@ -1,0 +1,426 @@
+#!/usr/bin/env python3
+"""
+OmniBurn CLI: Ongoing AI Subscription Burn & Task Yield Management Tool.
+"""
+
+import argparse
+import json
+import os
+import sys
+
+# Ensure repository root is on sys.path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
+from engine.db import get_connection, init_db
+from engine.sync_engine import sync_models
+from engine.recommender import recommend
+from engine.telemetry_logger import log_task_run, get_telemetry_summary
+from engine.toggles import toggle_model, toggle_provider
+from engine.classifier import classify_workload
+from engine.golden_harness import run_golden_suite, run_all_benchmarks
+from server.app import run_server
+
+def cmd_status(args):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM subscriptions")
+    subs = cursor.fetchall()
+    
+    cursor.execute("SELECT * FROM quota_pools")
+    pools = cursor.fetchall()
+
+    cursor.execute("SELECT COUNT(*) as cnt FROM models WHERE is_active = 1")
+    active_models = cursor.fetchone()["cnt"]
+
+    cursor.execute("SELECT COUNT(*) as cnt FROM models")
+    total_models = cursor.fetchone()["cnt"]
+
+    cursor.execute("SELECT * FROM model_changelog ORDER BY id DESC LIMIT 5")
+    changes = cursor.fetchall()
+    conn.close()
+
+    active_spend = sum(s["monthly_cost"] for s in subs if s["status"] == "active")
+    total_spend = sum(s["monthly_cost"] for s in subs)
+    daily_burn = active_spend / 30.416
+
+    print("\n==========================================================================")
+    print("        OMNIBURN [Built by AGY] — AI SUBSCRIPTION BURN STATUS             ")
+    print("==========================================================================")
+    print(f"Active Monthly Spend:     ${active_spend:.2f}/mo  (${daily_burn:.2f}/day) [Total Configured: ${total_spend:.2f}/mo]")
+    print(f"Tracked Models:           {active_models} active / {total_models} total models")
+    print("--------------------------------------------------------------------------")
+    print(f"{'Subscription':<32} | {'Provider':<10} | {'Cost/mo':<8} | {'Status'}")
+    print("--------------------------------------------------------------------------")
+    for s in subs:
+        status_badge = "[ACTIVE]" if s["status"] == "active" else "[DISABLED]"
+        print(f"{s['name']:<32} | {s['provider']:<10} | ${s['monthly_cost']:>6.2f} | {status_badge}")
+
+    print("\n--------------------------------------------------------------------------")
+    print(f"{'Quota Pool':<28} | {'Type':<15} | {'Current 5h':<10} | {'Weekly Ceiling'}")
+    print("--------------------------------------------------------------------------")
+    for p in pools:
+        is_5h = "rolling_5h" in p["window_type"]
+        cur = f"{p['current_pct_remaining']}%"
+        wk = f"{p['weekly_pct_remaining']}%" if is_5h else "N/A"
+        print(f"{p['pool_name']:<28} | {p['window_type']:<15} | {cur:<10} | {wk}")
+
+    if changes:
+        print("\n--------------------------------------------------------------------------")
+        print("Recent Model & Pricing Radar:")
+        for c in changes:
+            print(f" • [{c['event_type']}] {c['details']} ({c['timestamp'][:19]})")
+    print("==========================================================================\n")
+
+def cmd_sync(args):
+    print("Running live model registry & pricing sync...")
+    res = sync_models()
+    print(f"✓ Sync Complete! Local models scanned: {res['local_agy_models_synced']}, OpenRouter scanned: {res['openrouter_models_scanned']}")
+    if res["changes"]:
+        print(f"Detected {len(res['changes'])} new changes:")
+        for ch in res["changes"]:
+            print(f"  + [{ch['event']}] {ch.get('name') or ch['model_id']}")
+    else:
+        print("All models and pricing are up to date.")
+
+def cmd_recommend(args):
+    strat = "quota_first" if args.strategy == "quota" else "time_reliability_first"
+    rec = recommend(tier_id=args.tier, strategy=strat, plan_filter=args.plan)
+    
+    top = rec["top_recommendation"]
+    runner = rec["runner_up"]
+    
+    print("\n==========================================================================")
+    print(f" OMNIBURN [Built by AGY] ROUTING RECOMMENDATION (Tier {args.tier} | {strat.upper()})")
+    print("==========================================================================")
+    if not top:
+        print("⚠️  NO ACTIVE MODELS AVAILABLE!")
+        print("   " + rec.get("error", "All candidate models are disabled."))
+        print("   Run `ai-burn enable --model <id>` or `ai-burn enable --provider <name>`.")
+        print("==========================================================================\n")
+        return
+
+    print(f"🏆 TOP CHOICE:    {top['display_name']}")
+    print(f"   Harness/Pool:  {top['harness']} ({top['pool_name'] or 'Default'})")
+    print(f"   Tasks/Pool:    {top['tasks_per_pool_cycle']} tasks per 100% reset cycle")
+    print(f"   Sub Cost/Task: ${top['cost_per_completed_task']} per completed task")
+    print(f"   Success-Adj:   {top['success_adjusted_seconds']}s | {top['success_adjusted_tokens']:,} tokens per completed task")
+    print(f"   Notes:         {top['recommendation_notes']}")
+
+    if runner:
+        print(f"\n🥈 RUNNER UP:     {runner['display_name']}")
+        print(f"   Harness/Pool:  {runner['harness']}")
+        print(f"   Tasks/Pool:    {runner['tasks_per_pool_cycle']} tasks")
+        print(f"   Sub Cost/Task: ${runner['cost_per_completed_task']}")
+        print(f"   Success-Adj:   {runner['success_adjusted_seconds']}s | {runner['success_adjusted_tokens']:,} tokens")
+
+    print("\n💡 Policy Guidance:")
+    for r in rec["rationale"]:
+        print(f" • {r}")
+    print("==========================================================================\n")
+
+def cmd_enable(args):
+    if args.model:
+        res = toggle_model(args.model, is_active=True)
+        if "error" in res:
+            print(f"Error: {res['error']}")
+        else:
+            print(f"✓ Model '{res['display_name']}' ({args.model}) ENABLED.")
+    elif args.provider:
+        res = toggle_provider(args.provider, is_active=True)
+        if "error" in res:
+            print(f"Error: {res['error']}")
+        else:
+            print(f"✓ Provider/Subscription '{res['name']}' ENABLED ({res['models_affected']} models enabled).")
+    else:
+        print("Specify either --model <id> or --provider <name>.")
+
+def cmd_disable(args):
+    if args.model:
+        res = toggle_model(args.model, is_active=False)
+        if "error" in res:
+            print(f"Error: {res['error']}")
+        else:
+            print(f"✓ Model '{res['display_name']}' ({args.model}) DISABLED.")
+    elif args.provider:
+        res = toggle_provider(args.provider, is_active=False)
+        if "error" in res:
+            print(f"Error: {res['error']}")
+        else:
+            print(f"✓ Provider/Subscription '{res['name']}' DISABLED ({res['models_affected']} models disabled).")
+    else:
+        print("Specify either --model <id> or --provider <name>.")
+
+def cmd_models(args):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    sort_order = "m.is_active DESC, y.tier_id ASC, y.quota_first_score DESC"
+    if args.sort == "cost":
+        sort_order = "m.is_active DESC, y.cost_per_completed_task ASC"
+    elif args.sort == "api-cost":
+        sort_order = "m.is_active DESC, y.api_cost_per_task ASC"
+    elif args.sort == "tasks":
+        sort_order = "m.is_active DESC, y.tasks_per_pool_cycle DESC"
+    elif args.sort == "latency":
+        sort_order = "m.is_active DESC, y.success_adjusted_seconds ASC"
+    elif args.sort == "tokens":
+        sort_order = "m.is_active DESC, y.success_adjusted_tokens ASC"
+    elif args.sort == "name":
+        sort_order = "m.is_active DESC, m.display_name ASC"
+
+    filters = []
+    if args.tier:
+        filters.append(f"y.tier_id = {args.tier}")
+    if args.provider:
+        filters.append(f"LOWER(m.provider) LIKE '%{args.provider.lower()}%'")
+
+    where_clause = f"WHERE {' AND '.join(filters)}" if filters else ""
+
+    cursor.execute(f"""
+        SELECT m.model_id, m.display_name, m.provider, m.harness, m.is_active,
+               m.input_cost_per_m, m.output_cost_per_m,
+               y.tier_id, y.tasks_per_pool_cycle, y.cost_per_completed_task,
+               y.api_cost_per_task, y.success_adjusted_seconds
+        FROM models m
+        JOIN model_task_yields y ON m.model_id = y.model_id
+        {where_clause}
+        ORDER BY {sort_order}
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+
+    print("\n=================================================================================================================================")
+    sort_label = f"SORTED BY: {args.sort.upper()}"
+    tier_label = f" (TIER {args.tier})" if args.tier else " (ALL TIERS)"
+    print(f"                               OMNIBURN TRACKED MODELS & COSTS — {sort_label}{tier_label}                          ")
+    print("=================================================================================================================================")
+    print(f"{'Model Name':<28} | {'Provider':<13} | {'Harness / Route':<22} | {'Tier':<6} | {'Sub Cost/Task':<14} | {'Raw API Cost':<13} | {'Status'}")
+    print("---------------------------------------------------------------------------------------------------------------------------------")
+    for r in rows:
+        st = "ACTIVE" if r["is_active"] else "OFF"
+        print(f"{r['display_name']:<28} | {r['provider']:<13} | {r['harness']:<22} | Tier {r['tier_id']} | ${r['cost_per_completed_task']:>11.4f}  | ${r['api_cost_per_task']:>10.4f}  | [{st}]")
+    print("=================================================================================================================================\n")
+
+def cmd_log(args):
+    res = log_task_run(
+        task_id=f"CLI-{os.urandom(4).hex()}",
+        model_id=args.model,
+        task_class=f"Tier {args.tier}",
+        completed=not args.failed,
+        first_pass_success=not args.retried,
+        wall_clock_seconds=args.sec,
+        dec_5h=args.dec5h,
+        description=args.desc
+    )
+    print(f"✓ Task logged. Remaining 5h quota for pool: {res['pool_5h_remaining']}%")
+
+def cmd_telemetry(args):
+    s = get_telemetry_summary()
+    print("\n==========================================================================")
+    print("            EMPIRICAL MATCHED TELEMETRY SUMMARY (v7 Audited)              ")
+    print("==========================================================================")
+    print(f"{'Model ID':<25} | {'Class':<12} | {'Att':<4} | {'1stPass%':<8} | {'Tasks/1%':<8} | {'Sec/Done':<8} | {'Tokens/Done'}")
+    print("--------------------------------------------------------------------------")
+    for r in s:
+        short_tier = "Tier 2" if "Tier 2" in r["task_class"] else "Tier 3"
+        print(f"{r['model_id']:<25} | {short_tier:<12} | {r['attempts']:<4} | {r['first_pass_rate_pct']:>5.1f}%  | {r['tasks_per_1pct']:>7.1f}  | {r['sec_per_completed']:>6.1f}s  | {r['tokens_per_completed']:,}")
+    print("==========================================================================\n")
+
+def cmd_classify(args):
+    prompt = " ".join(args.prompt) if args.prompt else None
+    c = classify_workload(prompt=prompt, repo_path=args.dir)
+    print("\n==========================================================================")
+    print("      OMNIBURN [Built by AGY] — WORKLOAD COMPLEXITY CLASSIFICATION         ")
+    print("==========================================================================")
+    print(f"Detected Tier:        Tier {c['tier_id']} ({c['tier_label']})")
+    print(f"Confidence Score:     {c['confidence'] * 100:.0f}%")
+    print(f"Estimated Footprint:  ~{c['estimated_tokens']:,} billable tokens")
+    print(f"Identified Intent:    {c['intent']}")
+    print(f"Suggested Strategy:   {c['recommended_strategy'].upper()}")
+    if c.get("prompt_summary"):
+        print(f"Prompt Evaluated:     \"{c['prompt_summary']}\"")
+    ws = c["workspace_stats"]
+    if ws.get("is_git_repo"):
+        print(f"Workspace Git State:  {ws['file_count']} files modified (+{ws['additions']}/-{ws['deletions']} lines)")
+        if ws["modified_files"]:
+            print(f"Modified Files:       {', '.join(ws['modified_files'][:5])}{' ...' if len(ws['modified_files']) > 5 else ''}")
+    else:
+        print("Workspace Git State:  No active git repository detected (classified on prompt heuristics)")
+    if c["signals"]:
+        print("Signals & Rationale:")
+        for s in c["signals"]:
+            print(f" • {s}")
+    print("==========================================================================\n")
+
+def cmd_route(args):
+    prompt = " ".join(args.prompt) if args.prompt else None
+    c = classify_workload(prompt=prompt, repo_path=args.dir)
+    tier_id = c["tier_id"]
+    strat = (
+        ("quota_first" if args.strategy == "quota" else "time_reliability_first")
+        if args.strategy
+        else c["recommended_strategy"]
+    )
+    rec = recommend(tier_id=tier_id, strategy=strat, plan_filter=args.plan)
+    top = rec["top_recommendation"]
+    runner = rec["runner_up"]
+
+    print("\n==========================================================================")
+    print("       OMNIBURN [Built by AGY] — CONTEXT-AWARE SMART AUTO-ROUTER          ")
+    print("==========================================================================")
+    print(f"Task Analyzed:    {c['prompt_summary'] or 'Current git workspace'}")
+    print(f"Auto-Classified:  Tier {tier_id} ({c['intent']}) [Confidence: {c['confidence']*100:.0f}% | ~{c['estimated_tokens']:,} tokens]")
+    print(f"Active Strategy:  {strat.upper()}")
+    print("--------------------------------------------------------------------------")
+    if not top:
+        print("⚠️  NO ACTIVE MODELS AVAILABLE!")
+        print("   " + rec.get("error", "All candidate models are disabled."))
+        print("==========================================================================\n")
+        return
+
+    print(f"🏆 TOP CHOICE:    {top['display_name']}")
+    print(f"   Provider/Sub:  {top['provider']} ({top['sub_name'] or 'API'})")
+    print(f"   Harness/Pool:  {top['harness']} ({top['pool_name'] or 'Default Pool'})")
+    print(f"   Tasks/Pool:    {top['tasks_per_pool_cycle']} tasks per reset window")
+    print(f"   Sub Cost/Task: ${top['cost_per_completed_task']} per completed task")
+    print(f"   Success-Adj:   {top['success_adjusted_seconds']}s | {top['success_adjusted_tokens']:,} tokens")
+    if top.get("recommendation_notes"):
+        print(f"   Notes:         {top['recommendation_notes']}")
+
+    if runner:
+        print(f"\n🥈 RUNNER UP:     {runner['display_name']}")
+        print(f"   Provider/Sub:  {runner['provider']} ({runner['sub_name'] or 'API'})")
+        print(f"   Harness/Pool:  {runner['harness']} ({runner['pool_name'] or 'Default Pool'})")
+        print(f"   Tasks/Pool:    {runner['tasks_per_pool_cycle']} tasks")
+        print(f"   Sub Cost/Task: ${runner['cost_per_completed_task']}")
+        print(f"   Success-Adj:   {runner['success_adjusted_seconds']}s | {runner['success_adjusted_tokens']:,} tokens")
+
+    if rec.get("rationale"):
+        print("\n💡 Policy Guidance:")
+        for r in rec["rationale"]:
+            print(f" • {r}")
+    print("==========================================================================\n")
+
+def cmd_benchmark(args):
+    print("\n==========================================================================")
+    print("       OMNIBURN [Built by AGY] — LOCAL GOLDEN TASK VERIFICATION HARNESS   ")
+    print("==========================================================================")
+    if args.tier:
+        print(f"Running Golden Benchmark Suite for Tier {args.tier}...")
+        results = [run_golden_suite(args.tier, model_id=args.model)]
+    else:
+        print("Running Golden Benchmark Suite across all Tiers 1-4...")
+        results = run_all_benchmarks(model_id=args.model)
+
+    print("--------------------------------------------------------------------------")
+    print(f"{'Task / Suite':<36} | {'Tier':<6} | {'Model':<24} | {'Measured':<10} | {'Tokens':<8} | {'Status'}")
+    print("--------------------------------------------------------------------------")
+    for r in results:
+        status_badge = "[PASSED]" if r["status"] == "passed" else "[FAILED]"
+        print(f"{r['task_name']:<36} | Tier {r['tier_id']} | {r['model_id']:<24} | {r['execution_sec']:>7.1f}s   | {r['tokens_evaluated']:>6}   | {status_badge}")
+    print("--------------------------------------------------------------------------")
+    print("✓ Local execution verified and empirical telemetry recorded to burn_tracker.db.")
+    print("==========================================================================\n")
+
+def cmd_serve(args):
+    run_server(port=args.port)
+
+def main():
+    parser = argparse.ArgumentParser(description="OmniBurn: AI Subscription Burn & Yield Engine")
+    subparsers = parser.add_subparsers(dest="command")
+
+    # status
+    subparsers.add_parser("status", help="Show current subscription burn and quota status")
+
+    # sync
+    subparsers.add_parser("sync", help="Sync models and prices from live feeds")
+
+    # recommend
+    rec_parser = subparsers.add_parser("recommend", help="Get optimal model routing recommendation")
+    rec_parser.add_argument("--tier", type=int, choices=[1, 2, 3, 4], default=2, help="Task complexity tier (1-4)")
+    rec_parser.add_argument("--strategy", choices=["quota", "time"], default="quota", help="Routing strategy priority")
+    rec_parser.add_argument("--plan", choices=["all", "gemini", "claude", "cursor", "chatgpt"], default="all", help="Filter by plan")
+
+    # enable / disable
+    en_parser = subparsers.add_parser("enable", help="Enable a model or provider")
+    en_parser.add_argument("--model", help="Model ID to enable")
+    en_parser.add_argument("--provider", help="Provider/Subscription to enable")
+
+    dis_parser = subparsers.add_parser("disable", help="Disable a model or provider")
+    dis_parser.add_argument("--model", help="Model ID to disable")
+    dis_parser.add_argument("--provider", help="Provider/Subscription to disable")
+
+    # models with sorting
+    mod_parser = subparsers.add_parser("models", help="List all tracked models with cost and sorting")
+    mod_parser.add_argument("--sort", choices=["default", "cost", "api-cost", "tasks", "latency", "tokens", "name"], default="default", help="Sort order")
+    mod_parser.add_argument("--tier", type=int, choices=[1, 2, 3, 4], default=2, help="Filter by tier (1-4)")
+    mod_parser.add_argument("--provider", help="Filter by provider (e.g. OpenAI, Google, Anthropic, Cursor, xAI)")
+
+    # log
+    log_parser = subparsers.add_parser("log", help="Log task execution and decrement quota")
+    log_parser.add_argument("--model", required=True, help="Model ID used")
+    log_parser.add_argument("--tier", type=int, choices=[1, 2, 3, 4], default=2, help="Task complexity tier")
+    log_parser.add_argument("--sec", type=float, default=60.0, help="Wall-clock duration in seconds")
+    log_parser.add_argument("--dec5h", type=int, default=0, help="Visible 5h percentage decrement observed")
+    log_parser.add_argument("--failed", action="store_true", help="Flag if task failed completely")
+    log_parser.add_argument("--retried", action="store_true", help="Flag if task required retries")
+    log_parser.add_argument("--desc", default="CLI task run", help="Description")
+
+    # telemetry
+    subparsers.add_parser("telemetry", help="View audited empirical matched telemetry")
+
+    # classify
+    cls_parser = subparsers.add_parser("classify", help="Auto-classify coding task complexity tier (RouteLLM style)")
+    cls_parser.add_argument("prompt", nargs="*", help="Optional task description or instructions")
+    cls_parser.add_argument("--dir", default=None, help="Working directory to inspect git status and diff")
+
+    # route
+    route_parser = subparsers.add_parser("route", help="Auto-classify task complexity and route to optimal model")
+    route_parser.add_argument("prompt", nargs="*", help="Optional task description or instructions")
+    route_parser.add_argument("--dir", default=None, help="Working directory to inspect git status and diff")
+    route_parser.add_argument("--strategy", choices=["quota", "time"], default=None, help="Override routing strategy")
+    route_parser.add_argument("--plan", choices=["all", "gemini", "claude", "cursor", "chatgpt"], default="all", help="Filter by plan")
+
+    # benchmark
+    bm_parser = subparsers.add_parser("benchmark", help="Run local Golden Task Verification Harness (Aider/SWE-bench style)")
+    bm_parser.add_argument("--tier", type=int, choices=[1, 2, 3, 4], default=None, help="Specific tier to benchmark (1-4, default all)")
+    bm_parser.add_argument("--model", default=None, help="Model ID to evaluate")
+
+    # serve
+    serve_parser = subparsers.add_parser("serve", help="Run local web server on port 8787")
+    serve_parser.add_argument("--port", type=int, default=8787, help="Port to listen on")
+
+    args = parser.parse_args()
+    if not args.command:
+        parser.print_help()
+        sys.exit(0)
+
+    if args.command == "status":
+        cmd_status(args)
+    elif args.command == "sync":
+        cmd_sync(args)
+    elif args.command == "recommend":
+        cmd_recommend(args)
+    elif args.command == "classify":
+        cmd_classify(args)
+    elif args.command == "route":
+        cmd_route(args)
+    elif args.command == "benchmark":
+        cmd_benchmark(args)
+    elif args.command == "enable":
+        cmd_enable(args)
+    elif args.command == "disable":
+        cmd_disable(args)
+    elif args.command == "models":
+        cmd_models(args)
+    elif args.command == "log":
+        cmd_log(args)
+    elif args.command == "telemetry":
+        cmd_telemetry(args)
+    elif args.command == "serve":
+        cmd_serve(args)
+
+if __name__ == "__main__":
+    main()

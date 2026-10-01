@@ -1,0 +1,4120 @@
+{
+  "last_updated": "2026-09-23T13:05:37.612588+00:00",
+  "total_models_tracked": 4996,
+  "frontier_watchlist": [
+    {
+      "id": "gpt-4o",
+      "label": "GPT-4o",
+      "vendor": "OpenAI",
+      "subs": [
+        "chatgpt-plus",
+        "cursor-pro"
+      ],
+      "input_per_m": 2.5,
+      "output_per_m": 10.0,
+      "context": 16384
+    },
+    {
+      "id": "o1",
+      "label": "o1 (Reasoning)",
+      "vendor": "OpenAI",
+      "subs": [
+        "chatgpt-plus"
+      ],
+      "input_per_m": 15.0,
+      "output_per_m": 60.0,
+      "context": 100000
+    },
+    {
+      "id": "o3-mini",
+      "label": "o3-mini (High Speed Reasoning)",
+      "vendor": "OpenAI",
+      "subs": [
+        "chatgpt-plus"
+      ],
+      "input_per_m": 1.1,
+      "output_per_m": 4.4,
+      "context": 100000
+    },
+    {
+      "id": "gemini-1.5-pro",
+      "label": "Gemini 1.5 Pro (2M Context)",
+      "vendor": "Google",
+      "subs": [
+        "gemini-pro-antigravity"
+      ],
+      "input_per_m": 2.5,
+      "output_per_m": 10.0,
+      "context": 128000
+    },
+    {
+      "id": "gemini-2.0-flash",
+      "label": "Gemini 2.0 Flash (Agentic/Fast)",
+      "vendor": "Google",
+      "subs": [
+        "gemini-pro-antigravity"
+      ],
+      "input_per_m": 0,
+      "output_per_m": 0,
+      "context": 32768
+    },
+    {
+      "id": "claude-3-5-sonnet",
+      "label": "Claude 3.5 Sonnet (Frontier Coding)",
+      "vendor": "Anthropic",
+      "subs": [
+        "cursor-pro"
+      ],
+      "input_per_m": 3.0,
+      "output_per_m": 15.0,
+      "context": 4096
+    },
+    {
+      "id": "grok-2",
+      "label": "Grok 2 / Grok Bot",
+      "vendor": "xAI",
+      "subs": [
+        "cursor-pro"
+      ],
+      "input_per_m": 2.0,
+      "output_per_m": 10.0,
+      "context": 4000
+    },
+    {
+      "id": "hermes-3-llama-3.1-405b",
+      "label": "Hermes 3 (405B Flagship)",
+      "vendor": "Nous Research",
+      "subs": [
+        "nous-research"
+      ],
+      "input_per_m": 1.0,
+      "output_per_m": 1.0,
+      "context": 131072
+    },
+    {
+      "id": "llama-3.1-nemotron-70b",
+      "label": "Nemotron 70B (NVIDIA)",
+      "vendor": "NVIDIA",
+      "subs": [
+        "nvidia-nim"
+      ],
+      "input_per_m": 0.6,
+      "output_per_m": 0.6,
+      "context": 131072
+    },
+    {
+      "id": "llama-3.3-70b-instruct",
+      "label": "Llama 3.3 70B Instruct",
+      "vendor": "Meta / NVIDIA",
+      "subs": [
+        "nvidia-nim",
+        "groq-free"
+      ],
+      "input_per_m": 0.1,
+      "output_per_m": 0.32,
+      "context": 131072
+    }
+  ],
+  "models": {
+    "sample_spec": {
+      "name": "sample_spec",
+      "provider": "one of https://docs.litellm.ai/docs/providers",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": "LEGACY parameter. set to max_output_tokens if provider specifies it. IF not set to max_input_tokens, if provider specifies it.",
+      "mode": "one of: chat, embedding, completion, image_generation, audio_transcription, audio_speech, image_generation, moderation, rerank, search"
+    },
+    "1024-x-1024/50-steps/bedrock/amazon.nova-canvas-v1:0": {
+      "name": "1024-x-1024/50-steps/bedrock/amazon.nova-canvas-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 2600,
+      "mode": "image_generation"
+    },
+    "1024-x-1024/50-steps/stability.stable-diffusion-xl-v1": {
+      "name": "1024-x-1024/50-steps/stability.stable-diffusion-xl-v1",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 77,
+      "mode": "image_generation"
+    },
+    "1024-x-1024/max-steps/stability.stable-diffusion-xl-v1": {
+      "name": "1024-x-1024/max-steps/stability.stable-diffusion-xl-v1",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 77,
+      "mode": "image_generation"
+    },
+    "512-x-512/50-steps/stability.stable-diffusion-xl-v0": {
+      "name": "512-x-512/50-steps/stability.stable-diffusion-xl-v0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 77,
+      "mode": "image_generation"
+    },
+    "512-x-512/max-steps/stability.stable-diffusion-xl-v0": {
+      "name": "512-x-512/max-steps/stability.stable-diffusion-xl-v0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 77,
+      "mode": "image_generation"
+    },
+    "ai21.j2-mid-v1": {
+      "name": "ai21.j2-mid-v1",
+      "provider": "bedrock",
+      "input_per_million": 12.5,
+      "output_per_million": 12.5,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "ai21.j2-ultra-v1": {
+      "name": "ai21.j2-ultra-v1",
+      "provider": "bedrock",
+      "input_per_million": 18.8,
+      "output_per_million": 18.8,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "ai21.jamba-1-5-large-v1:0": {
+      "name": "ai21.jamba-1-5-large-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 2.0,
+      "output_per_million": 8.0,
+      "context_window": 256000,
+      "mode": "chat"
+    },
+    "ai21.jamba-1-5-mini-v1:0": {
+      "name": "ai21.jamba-1-5-mini-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0.2,
+      "output_per_million": 0.4,
+      "context_window": 256000,
+      "mode": "chat"
+    },
+    "ai21.jamba-instruct-v1:0": {
+      "name": "ai21.jamba-instruct-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0.5,
+      "output_per_million": 0.7,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "aiml/dall-e-2": {
+      "name": "aiml/dall-e-2",
+      "provider": "aiml",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "aiml/dall-e-3": {
+      "name": "aiml/dall-e-3",
+      "provider": "aiml",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "aiml/flux-pro": {
+      "name": "aiml/flux-pro",
+      "provider": "aiml",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "aiml/flux-pro/v1.1": {
+      "name": "aiml/flux-pro/v1.1",
+      "provider": "aiml",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "aiml/flux-pro/v1.1-ultra": {
+      "name": "aiml/flux-pro/v1.1-ultra",
+      "provider": "aiml",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "aiml/flux-realism": {
+      "name": "aiml/flux-realism",
+      "provider": "aiml",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "aiml/flux/dev": {
+      "name": "aiml/flux/dev",
+      "provider": "aiml",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "aiml/flux/kontext-max/text-to-image": {
+      "name": "aiml/flux/kontext-max/text-to-image",
+      "provider": "aiml",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "aiml/flux/kontext-pro/text-to-image": {
+      "name": "aiml/flux/kontext-pro/text-to-image",
+      "provider": "aiml",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "aiml/flux/schnell": {
+      "name": "aiml/flux/schnell",
+      "provider": "aiml",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "aiml/google/imagen-4.0-ultra-generate-001": {
+      "name": "aiml/google/imagen-4.0-ultra-generate-001",
+      "provider": "aiml",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "aiml/google/nano-banana-pro": {
+      "name": "aiml/google/nano-banana-pro",
+      "provider": "aiml",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "aiml/openai/gpt-image-2": {
+      "name": "aiml/openai/gpt-image-2",
+      "provider": "aiml",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "amazon.nova-canvas-v1:0": {
+      "name": "amazon.nova-canvas-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 2600,
+      "mode": "image_generation"
+    },
+    "us.amazon.nova-canvas-v1:0": {
+      "name": "us.amazon.nova-canvas-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 2600,
+      "mode": "image_generation"
+    },
+    "us.writer.palmyra-x4-v1:0": {
+      "name": "us.writer.palmyra-x4-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "us.writer.palmyra-x5-v1:0": {
+      "name": "us.writer.palmyra-x5-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 0.6,
+      "output_per_million": 6.0,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "writer.palmyra-x4-v1:0": {
+      "name": "writer.palmyra-x4-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "writer.palmyra-x5-v1:0": {
+      "name": "writer.palmyra-x5-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 0.6,
+      "output_per_million": 6.0,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "writer.palmyra-vision-7b": {
+      "name": "writer.palmyra-vision-7b",
+      "provider": "bedrock_converse",
+      "input_per_million": 0.15,
+      "output_per_million": 0.6,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "amazon.nova-lite-v1:0": {
+      "name": "amazon.nova-lite-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 0.06,
+      "output_per_million": 0.24,
+      "context_window": 10000,
+      "mode": "chat"
+    },
+    "amazon.nova-2-lite-v1:0": {
+      "name": "amazon.nova-2-lite-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 0.3,
+      "output_per_million": 2.5,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "amazon.nova-2-pro-preview-20251202-v1:0": {
+      "name": "amazon.nova-2-pro-preview-20251202-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 2.188,
+      "output_per_million": 17.5,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "apac.amazon.nova-2-lite-v1:0": {
+      "name": "apac.amazon.nova-2-lite-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 0.33,
+      "output_per_million": 2.75,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "apac.amazon.nova-2-pro-preview-20251202-v1:0": {
+      "name": "apac.amazon.nova-2-pro-preview-20251202-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 2.188,
+      "output_per_million": 17.5,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "eu.amazon.nova-2-lite-v1:0": {
+      "name": "eu.amazon.nova-2-lite-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 0.33,
+      "output_per_million": 2.75,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "eu.amazon.nova-2-pro-preview-20251202-v1:0": {
+      "name": "eu.amazon.nova-2-pro-preview-20251202-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 2.188,
+      "output_per_million": 17.5,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "us.amazon.nova-2-lite-v1:0": {
+      "name": "us.amazon.nova-2-lite-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 0.33,
+      "output_per_million": 2.75,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "us.amazon.nova-2-pro-preview-20251202-v1:0": {
+      "name": "us.amazon.nova-2-pro-preview-20251202-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 2.188,
+      "output_per_million": 17.5,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "amazon.nova-2-multimodal-embeddings-v1:0": {
+      "name": "amazon.nova-2-multimodal-embeddings-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0.135,
+      "output_per_million": 0,
+      "context_window": 8172,
+      "mode": "embedding"
+    },
+    "amazon.nova-micro-v1:0": {
+      "name": "amazon.nova-micro-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 0.035,
+      "output_per_million": 0.14,
+      "context_window": 10000,
+      "mode": "chat"
+    },
+    "amazon.nova-pro-v1:0": {
+      "name": "amazon.nova-pro-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 0.8,
+      "output_per_million": 3.2,
+      "context_window": 10000,
+      "mode": "chat"
+    },
+    "amazon.nova-2-sonic-v1:0": {
+      "name": "amazon.nova-2-sonic-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0.33,
+      "output_per_million": 2.75,
+      "context_window": 0,
+      "mode": "realtime"
+    },
+    "amazon.rerank-v1:0": {
+      "name": "amazon.rerank-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 32000,
+      "mode": "rerank"
+    },
+    "amazon.titan-embed-image-v1": {
+      "name": "amazon.titan-embed-image-v1",
+      "provider": "bedrock",
+      "input_per_million": 0.8,
+      "output_per_million": 0,
+      "context_window": 128,
+      "mode": "embedding"
+    },
+    "amazon.titan-embed-text-v1": {
+      "name": "amazon.titan-embed-text-v1",
+      "provider": "bedrock",
+      "input_per_million": 0.1,
+      "output_per_million": 0,
+      "context_window": 8192,
+      "mode": "embedding"
+    },
+    "amazon.titan-embed-g1-text-02": {
+      "name": "amazon.titan-embed-g1-text-02",
+      "provider": "bedrock",
+      "input_per_million": 0.1,
+      "output_per_million": 0,
+      "context_window": 8192,
+      "mode": "embedding"
+    },
+    "amazon.titan-embed-text-v2:0": {
+      "name": "amazon.titan-embed-text-v2:0",
+      "provider": "bedrock",
+      "input_per_million": 0.02,
+      "output_per_million": 0,
+      "context_window": 8192,
+      "mode": "embedding"
+    },
+    "amazon.titan-image-generator-v1": {
+      "name": "amazon.titan-image-generator-v1",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "amazon.titan-image-generator-v2": {
+      "name": "amazon.titan-image-generator-v2",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "amazon.titan-image-generator-v2:0": {
+      "name": "amazon.titan-image-generator-v2:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "twelvelabs.marengo-embed-2-7-v1:0": {
+      "name": "twelvelabs.marengo-embed-2-7-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 77,
+      "mode": "embedding"
+    },
+    "us.twelvelabs.marengo-embed-2-7-v1:0": {
+      "name": "us.twelvelabs.marengo-embed-2-7-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 77,
+      "mode": "embedding"
+    },
+    "eu.twelvelabs.marengo-embed-2-7-v1:0": {
+      "name": "eu.twelvelabs.marengo-embed-2-7-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 77,
+      "mode": "embedding"
+    },
+    "twelvelabs.marengo-embed-3-0-v1:0": {
+      "name": "twelvelabs.marengo-embed-3-0-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 500,
+      "mode": "embedding"
+    },
+    "us.twelvelabs.marengo-embed-3-0-v1:0": {
+      "name": "us.twelvelabs.marengo-embed-3-0-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 500,
+      "mode": "embedding"
+    },
+    "eu.twelvelabs.marengo-embed-3-0-v1:0": {
+      "name": "eu.twelvelabs.marengo-embed-3-0-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 500,
+      "mode": "embedding"
+    },
+    "twelvelabs.pegasus-1-2-v1:0": {
+      "name": "twelvelabs.pegasus-1-2-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 7.5,
+      "context_window": 0,
+      "mode": "chat"
+    },
+    "us.twelvelabs.pegasus-1-2-v1:0": {
+      "name": "us.twelvelabs.pegasus-1-2-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 7.5,
+      "context_window": 0,
+      "mode": "chat"
+    },
+    "eu.twelvelabs.pegasus-1-2-v1:0": {
+      "name": "eu.twelvelabs.pegasus-1-2-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 7.5,
+      "context_window": 0,
+      "mode": "chat"
+    },
+    "global.twelvelabs.pegasus-1-2-v1:0": {
+      "name": "global.twelvelabs.pegasus-1-2-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 7.5,
+      "context_window": 0,
+      "mode": "chat"
+    },
+    "amazon.titan-text-express-v1": {
+      "name": "amazon.titan-text-express-v1",
+      "provider": "bedrock",
+      "input_per_million": 1.3,
+      "output_per_million": 1.7,
+      "context_window": 8000,
+      "mode": "chat"
+    },
+    "amazon.titan-text-lite-v1": {
+      "name": "amazon.titan-text-lite-v1",
+      "provider": "bedrock",
+      "input_per_million": 0.3,
+      "output_per_million": 0.4,
+      "context_window": 4000,
+      "mode": "chat"
+    },
+    "amazon.titan-text-premier-v1:0": {
+      "name": "amazon.titan-text-premier-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0.5,
+      "output_per_million": 1.5,
+      "context_window": 32000,
+      "mode": "chat"
+    },
+    "anthropic.claude-3-5-haiku-20241022-v1:0": {
+      "name": "anthropic.claude-3-5-haiku-20241022-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 0.8,
+      "output_per_million": 4.0,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "anthropic.claude-haiku-4-5-20251001-v1:0": {
+      "name": "anthropic.claude-haiku-4-5-20251001-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 1.0,
+      "output_per_million": 5.0,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "anthropic.claude-haiku-4-5@20251001": {
+      "name": "anthropic.claude-haiku-4-5@20251001",
+      "provider": "bedrock_converse",
+      "input_per_million": 1.0,
+      "output_per_million": 5.0,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "anthropic.claude-3-5-sonnet-20240620-v1:0": {
+      "name": "anthropic.claude-3-5-sonnet-20240620-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 3.0,
+      "output_per_million": 15.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "anthropic.claude-3-5-sonnet-20241022-v2:0": {
+      "name": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+      "provider": "bedrock",
+      "input_per_million": 3.0,
+      "output_per_million": 15.0,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "anthropic.claude-3-7-sonnet-20240620-v1:0": {
+      "name": "anthropic.claude-3-7-sonnet-20240620-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 3.6,
+      "output_per_million": 18.0,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "anthropic.claude-3-7-sonnet-20250219-v1:0": {
+      "name": "anthropic.claude-3-7-sonnet-20250219-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 3.0,
+      "output_per_million": 15.0,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "anthropic.claude-3-opus-20240229-v1:0": {
+      "name": "anthropic.claude-3-opus-20240229-v1:0",
+      "provider": "bedrock",
+      "input_per_million": 15.0,
+      "output_per_million": 75.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "anthropic.claude-instant-v1": {
+      "name": "anthropic.claude-instant-v1",
+      "provider": "bedrock",
+      "input_per_million": 0.8,
+      "output_per_million": 2.4,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "anthropic.claude-opus-4-1-20250805-v1:0": {
+      "name": "anthropic.claude-opus-4-1-20250805-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 15.0,
+      "output_per_million": 75.0,
+      "context_window": 32000,
+      "mode": "chat"
+    },
+    "anthropic.claude-opus-4-20250514-v1:0": {
+      "name": "anthropic.claude-opus-4-20250514-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 15.0,
+      "output_per_million": 75.0,
+      "context_window": 32000,
+      "mode": "chat"
+    },
+    "anthropic.claude-opus-4-5-20251101-v1:0": {
+      "name": "anthropic.claude-opus-4-5-20251101-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "anthropic.claude-opus-4-6-v1": {
+      "name": "anthropic.claude-opus-4-6-v1",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "global.anthropic.claude-opus-4-6-v1": {
+      "name": "global.anthropic.claude-opus-4-6-v1",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "us.anthropic.claude-opus-4-6-v1": {
+      "name": "us.anthropic.claude-opus-4-6-v1",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "eu.anthropic.claude-opus-4-6-v1": {
+      "name": "eu.anthropic.claude-opus-4-6-v1",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "au.anthropic.claude-opus-4-6-v1": {
+      "name": "au.anthropic.claude-opus-4-6-v1",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "anthropic.claude-opus-4-7": {
+      "name": "anthropic.claude-opus-4-7",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "anthropic.claude-mythos-preview": {
+      "name": "anthropic.claude-mythos-preview",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "global.anthropic.claude-opus-4-7": {
+      "name": "global.anthropic.claude-opus-4-7",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "us.anthropic.claude-opus-4-7": {
+      "name": "us.anthropic.claude-opus-4-7",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "eu.anthropic.claude-opus-4-7": {
+      "name": "eu.anthropic.claude-opus-4-7",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "au.anthropic.claude-opus-4-7": {
+      "name": "au.anthropic.claude-opus-4-7",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "anthropic.claude-fable-5": {
+      "name": "anthropic.claude-fable-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 10.0,
+      "output_per_million": 50.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "anthropic.claude-fable-5-1": {
+      "name": "anthropic.claude-fable-5-1",
+      "provider": "bedrock_converse",
+      "input_per_million": 10.0,
+      "output_per_million": 50.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "global.anthropic.claude-fable-5": {
+      "name": "global.anthropic.claude-fable-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 10.0,
+      "output_per_million": 50.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "global.anthropic.claude-fable-5-1": {
+      "name": "global.anthropic.claude-fable-5-1",
+      "provider": "bedrock_converse",
+      "input_per_million": 10.0,
+      "output_per_million": 50.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "us.anthropic.claude-fable-5": {
+      "name": "us.anthropic.claude-fable-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 11.0,
+      "output_per_million": 55.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "us.anthropic.claude-fable-5-1": {
+      "name": "us.anthropic.claude-fable-5-1",
+      "provider": "bedrock_converse",
+      "input_per_million": 11.0,
+      "output_per_million": 55.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "eu.anthropic.claude-fable-5": {
+      "name": "eu.anthropic.claude-fable-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 11.0,
+      "output_per_million": 55.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "eu.anthropic.claude-fable-5-1": {
+      "name": "eu.anthropic.claude-fable-5-1",
+      "provider": "bedrock_converse",
+      "input_per_million": 11.0,
+      "output_per_million": 55.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "anthropic.claude-opus-5": {
+      "name": "anthropic.claude-opus-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "anthropic.claude-opus-5-5": {
+      "name": "anthropic.claude-opus-5-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 4.0,
+      "output_per_million": 20.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "global.anthropic.claude-opus-5": {
+      "name": "global.anthropic.claude-opus-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "global.anthropic.claude-opus-5-5": {
+      "name": "global.anthropic.claude-opus-5-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 4.0,
+      "output_per_million": 20.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "us.anthropic.claude-opus-5": {
+      "name": "us.anthropic.claude-opus-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "us.anthropic.claude-opus-5-5": {
+      "name": "us.anthropic.claude-opus-5-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 4.4,
+      "output_per_million": 22.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "eu.anthropic.claude-opus-5": {
+      "name": "eu.anthropic.claude-opus-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "eu.anthropic.claude-opus-5-5": {
+      "name": "eu.anthropic.claude-opus-5-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 4.4,
+      "output_per_million": 22.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "au.anthropic.claude-opus-5": {
+      "name": "au.anthropic.claude-opus-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "au.anthropic.claude-opus-5-5": {
+      "name": "au.anthropic.claude-opus-5-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 4.4,
+      "output_per_million": 22.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "jp.anthropic.claude-opus-5": {
+      "name": "jp.anthropic.claude-opus-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "jp.anthropic.claude-opus-5-5": {
+      "name": "jp.anthropic.claude-opus-5-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 4.4,
+      "output_per_million": 22.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "anthropic.claude-opus-4-8": {
+      "name": "anthropic.claude-opus-4-8",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "global.anthropic.claude-opus-4-8": {
+      "name": "global.anthropic.claude-opus-4-8",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "us.anthropic.claude-opus-4-8": {
+      "name": "us.anthropic.claude-opus-4-8",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "eu.anthropic.claude-opus-4-8": {
+      "name": "eu.anthropic.claude-opus-4-8",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "au.anthropic.claude-opus-4-8": {
+      "name": "au.anthropic.claude-opus-4-8",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "jp.anthropic.claude-opus-4-8": {
+      "name": "jp.anthropic.claude-opus-4-8",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "jp.anthropic.claude-opus-4-7": {
+      "name": "jp.anthropic.claude-opus-4-7",
+      "provider": "bedrock_converse",
+      "input_per_million": 5.5,
+      "output_per_million": 27.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "anthropic.claude-sonnet-5": {
+      "name": "anthropic.claude-sonnet-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 2.0,
+      "output_per_million": 10.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "global.anthropic.claude-sonnet-5": {
+      "name": "global.anthropic.claude-sonnet-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 2.0,
+      "output_per_million": 10.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "us.anthropic.claude-sonnet-5": {
+      "name": "us.anthropic.claude-sonnet-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 2.2,
+      "output_per_million": 11.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "eu.anthropic.claude-sonnet-5": {
+      "name": "eu.anthropic.claude-sonnet-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 2.2,
+      "output_per_million": 11.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "au.anthropic.claude-sonnet-5": {
+      "name": "au.anthropic.claude-sonnet-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 2.2,
+      "output_per_million": 11.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "jp.anthropic.claude-sonnet-5": {
+      "name": "jp.anthropic.claude-sonnet-5",
+      "provider": "bedrock_converse",
+      "input_per_million": 2.2,
+      "output_per_million": 11.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "anthropic.claude-sonnet-4-6": {
+      "name": "anthropic.claude-sonnet-4-6",
+      "provider": "bedrock_converse",
+      "input_per_million": 3.0,
+      "output_per_million": 15.0,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "global.anthropic.claude-sonnet-4-6": {
+      "name": "global.anthropic.claude-sonnet-4-6",
+      "provider": "bedrock_converse",
+      "input_per_million": 3.0,
+      "output_per_million": 15.0,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "us.anthropic.claude-sonnet-4-6": {
+      "name": "us.anthropic.claude-sonnet-4-6",
+      "provider": "bedrock_converse",
+      "input_per_million": 3.3,
+      "output_per_million": 16.5,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "eu.anthropic.claude-sonnet-4-6": {
+      "name": "eu.anthropic.claude-sonnet-4-6",
+      "provider": "bedrock_converse",
+      "input_per_million": 3.3,
+      "output_per_million": 16.5,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "au.anthropic.claude-sonnet-4-6": {
+      "name": "au.anthropic.claude-sonnet-4-6",
+      "provider": "bedrock_converse",
+      "input_per_million": 3.3,
+      "output_per_million": 16.5,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "jp.anthropic.claude-sonnet-4-6": {
+      "name": "jp.anthropic.claude-sonnet-4-6",
+      "provider": "bedrock_converse",
+      "input_per_million": 3.3,
+      "output_per_million": 16.5,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "anthropic.claude-sonnet-4-20250514-v1:0": {
+      "name": "anthropic.claude-sonnet-4-20250514-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 3.0,
+      "output_per_million": 15.0,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "anthropic.claude-sonnet-4-5-20250929-v1:0": {
+      "name": "anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 3.0,
+      "output_per_million": 15.0,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "anthropic.claude-v1": {
+      "name": "anthropic.claude-v1",
+      "provider": "bedrock",
+      "input_per_million": 8.0,
+      "output_per_million": 24.0,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "anthropic.claude-v2:1": {
+      "name": "anthropic.claude-v2:1",
+      "provider": "bedrock",
+      "input_per_million": 8.0,
+      "output_per_million": 24.0,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "anyscale/huggingfaceh4/zephyr-7b-beta": {
+      "name": "anyscale/HuggingFaceH4/zephyr-7b-beta",
+      "provider": "anyscale",
+      "input_per_million": 0.15,
+      "output_per_million": 0.15,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "anyscale/codellama/codellama-34b-instruct-hf": {
+      "name": "anyscale/codellama/CodeLlama-34b-Instruct-hf",
+      "provider": "anyscale",
+      "input_per_million": 1.0,
+      "output_per_million": 1.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "anyscale/codellama/codellama-70b-instruct-hf": {
+      "name": "anyscale/codellama/CodeLlama-70b-Instruct-hf",
+      "provider": "anyscale",
+      "input_per_million": 1.0,
+      "output_per_million": 1.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "anyscale/google/gemma-7b-it": {
+      "name": "anyscale/google/gemma-7b-it",
+      "provider": "anyscale",
+      "input_per_million": 0.15,
+      "output_per_million": 0.15,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "anyscale/meta-llama/llama-2-13b-chat-hf": {
+      "name": "anyscale/meta-llama/Llama-2-13b-chat-hf",
+      "provider": "anyscale",
+      "input_per_million": 0.25,
+      "output_per_million": 0.25,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "anyscale/meta-llama/llama-2-70b-chat-hf": {
+      "name": "anyscale/meta-llama/Llama-2-70b-chat-hf",
+      "provider": "anyscale",
+      "input_per_million": 1.0,
+      "output_per_million": 1.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "anyscale/meta-llama/llama-2-7b-chat-hf": {
+      "name": "anyscale/meta-llama/Llama-2-7b-chat-hf",
+      "provider": "anyscale",
+      "input_per_million": 0.15,
+      "output_per_million": 0.15,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "anyscale/meta-llama/meta-llama-3-70b-instruct": {
+      "name": "anyscale/meta-llama/Meta-Llama-3-70B-Instruct",
+      "provider": "anyscale",
+      "input_per_million": 1.0,
+      "output_per_million": 1.0,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "anyscale/meta-llama/meta-llama-3-8b-instruct": {
+      "name": "anyscale/meta-llama/Meta-Llama-3-8B-Instruct",
+      "provider": "anyscale",
+      "input_per_million": 0.15,
+      "output_per_million": 0.15,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "anyscale/mistralai/mistral-7b-instruct-v0.1": {
+      "name": "anyscale/mistralai/Mistral-7B-Instruct-v0.1",
+      "provider": "anyscale",
+      "input_per_million": 0.15,
+      "output_per_million": 0.15,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "anyscale/mistralai/mixtral-8x22b-instruct-v0.1": {
+      "name": "anyscale/mistralai/Mixtral-8x22B-Instruct-v0.1",
+      "provider": "anyscale",
+      "input_per_million": 0.9,
+      "output_per_million": 0.9,
+      "context_window": 65536,
+      "mode": "chat"
+    },
+    "anyscale/mistralai/mixtral-8x7b-instruct-v0.1": {
+      "name": "anyscale/mistralai/Mixtral-8x7B-Instruct-v0.1",
+      "provider": "anyscale",
+      "input_per_million": 0.15,
+      "output_per_million": 0.15,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "apac.amazon.nova-lite-v1:0": {
+      "name": "apac.amazon.nova-lite-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 0.063,
+      "output_per_million": 0.252,
+      "context_window": 10000,
+      "mode": "chat"
+    },
+    "apac.amazon.nova-micro-v1:0": {
+      "name": "apac.amazon.nova-micro-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 0.037,
+      "output_per_million": 0.148,
+      "context_window": 10000,
+      "mode": "chat"
+    },
+    "apac.amazon.nova-pro-v1:0": {
+      "name": "apac.amazon.nova-pro-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 0.84,
+      "output_per_million": 3.36,
+      "context_window": 10000,
+      "mode": "chat"
+    },
+    "apac.anthropic.claude-haiku-4-5-20251001-v1:0": {
+      "name": "apac.anthropic.claude-haiku-4-5-20251001-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 1.1,
+      "output_per_million": 5.5,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "apac.anthropic.claude-sonnet-4-20250514-v1:0": {
+      "name": "apac.anthropic.claude-sonnet-4-20250514-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 3.0,
+      "output_per_million": 15.0,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "assemblyai/best": {
+      "name": "assemblyai/best",
+      "provider": "assemblyai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "audio_transcription"
+    },
+    "assemblyai/nano": {
+      "name": "assemblyai/nano",
+      "provider": "assemblyai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "audio_transcription"
+    },
+    "au.anthropic.claude-sonnet-4-5-20250929-v1:0": {
+      "name": "au.anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "provider": "bedrock_converse",
+      "input_per_million": 3.3,
+      "output_per_million": 16.5,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "azure/ada": {
+      "name": "azure/ada",
+      "provider": "azure",
+      "input_per_million": 0.1,
+      "output_per_million": 0,
+      "context_window": 8191,
+      "mode": "embedding"
+    },
+    "azure/codex-mini": {
+      "name": "azure/codex-mini",
+      "provider": "azure",
+      "input_per_million": 1.5,
+      "output_per_million": 6.0,
+      "context_window": 100000,
+      "mode": "responses"
+    },
+    "azure/command-r-plus": {
+      "name": "azure/command-r-plus",
+      "provider": "azure",
+      "input_per_million": 3.0,
+      "output_per_million": 15.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/claude-haiku-4-5": {
+      "name": "azure_ai/claude-haiku-4-5",
+      "provider": "azure_ai",
+      "input_per_million": 1.0,
+      "output_per_million": 5.0,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "azure_ai/claude-opus-4-5": {
+      "name": "azure_ai/claude-opus-4-5",
+      "provider": "azure_ai",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "azure_ai/claude-opus-4-6": {
+      "name": "azure_ai/claude-opus-4-6",
+      "provider": "azure_ai",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/claude-opus-4-7": {
+      "name": "azure_ai/claude-opus-4-7",
+      "provider": "azure_ai",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/claude-fable-5": {
+      "name": "azure_ai/claude-fable-5",
+      "provider": "azure_ai",
+      "input_per_million": 10.0,
+      "output_per_million": 50.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/claude-fable-5-1": {
+      "name": "azure_ai/claude-fable-5-1",
+      "provider": "azure_ai",
+      "input_per_million": 10.0,
+      "output_per_million": 50.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/claude-opus-5": {
+      "name": "azure_ai/claude-opus-5",
+      "provider": "azure_ai",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/claude-opus-5-5": {
+      "name": "azure_ai/claude-opus-5-5",
+      "provider": "azure_ai",
+      "input_per_million": 4.0,
+      "output_per_million": 20.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/claude-opus-4-8": {
+      "name": "azure_ai/claude-opus-4-8",
+      "provider": "azure_ai",
+      "input_per_million": 5.0,
+      "output_per_million": 25.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/claude-sonnet-4-5": {
+      "name": "azure_ai/claude-sonnet-4-5",
+      "provider": "azure_ai",
+      "input_per_million": 3.0,
+      "output_per_million": 15.0,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "azure_ai/claude-sonnet-5": {
+      "name": "azure_ai/claude-sonnet-5",
+      "provider": "azure_ai",
+      "input_per_million": 2.0,
+      "output_per_million": 10.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/claude-sonnet-4-6": {
+      "name": "azure_ai/claude-sonnet-4-6",
+      "provider": "azure_ai",
+      "input_per_million": 3.0,
+      "output_per_million": 15.0,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "azure/computer-use-preview": {
+      "name": "azure/computer-use-preview",
+      "provider": "azure",
+      "input_per_million": 3.0,
+      "output_per_million": 12.0,
+      "context_window": 1024,
+      "mode": "chat"
+    },
+    "azure/container": {
+      "name": "azure/container",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "chat"
+    },
+    "azure_ai/gpt-oss-120b": {
+      "name": "azure_ai/gpt-oss-120b",
+      "provider": "azure_ai",
+      "input_per_million": 0.15,
+      "output_per_million": 0.6,
+      "context_window": 131072,
+      "mode": "chat"
+    },
+    "azure_ai/gpt-6-astra": {
+      "name": "azure_ai/gpt-6-astra",
+      "provider": "azure_ai",
+      "input_per_million": 10.0,
+      "output_per_million": 50.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/gpt-5.5": {
+      "name": "azure_ai/gpt-5.5",
+      "provider": "azure_ai",
+      "input_per_million": 5.0,
+      "output_per_million": 30.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/gpt-chat-latest": {
+      "name": "azure_ai/gpt-chat-latest",
+      "provider": "azure_ai",
+      "input_per_million": 5.0,
+      "output_per_million": 30.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/gpt-image-2": {
+      "name": "azure_ai/gpt-image-2",
+      "provider": "azure_ai",
+      "input_per_million": 5.0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure_ai/codex-mini": {
+      "name": "azure_ai/codex-mini",
+      "provider": "azure_ai",
+      "input_per_million": 1.5,
+      "output_per_million": 6.0,
+      "context_window": 100000,
+      "mode": "responses"
+    },
+    "azure_ai/whisper": {
+      "name": "azure_ai/whisper",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "audio_transcription"
+    },
+    "azure_ai/gpt-5.5-2026-04-23": {
+      "name": "azure_ai/gpt-5.5-2026-04-23",
+      "provider": "azure_ai",
+      "input_per_million": 5.0,
+      "output_per_million": 30.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/gpt-5.5-2026-04-24": {
+      "name": "azure_ai/gpt-5.5-2026-04-24",
+      "provider": "azure_ai",
+      "input_per_million": 5.0,
+      "output_per_million": 30.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/gpt-5.4": {
+      "name": "azure_ai/gpt-5.4",
+      "provider": "azure_ai",
+      "input_per_million": 2.5,
+      "output_per_million": 15.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/gpt-5.4-2026-03-05": {
+      "name": "azure_ai/gpt-5.4-2026-03-05",
+      "provider": "azure_ai",
+      "input_per_million": 2.5,
+      "output_per_million": 15.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/gpt-5.4-pro": {
+      "name": "azure_ai/gpt-5.4-pro",
+      "provider": "azure_ai",
+      "input_per_million": 30.0,
+      "output_per_million": 180.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure_ai/gpt-5.4-pro-2026-03-05": {
+      "name": "azure_ai/gpt-5.4-pro-2026-03-05",
+      "provider": "azure_ai",
+      "input_per_million": 30.0,
+      "output_per_million": 180.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure_ai/gpt-5.4-mini": {
+      "name": "azure_ai/gpt-5.4-mini",
+      "provider": "azure_ai",
+      "input_per_million": 0.75,
+      "output_per_million": 4.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/gpt-5.4-mini-2026-03-17": {
+      "name": "azure_ai/gpt-5.4-mini-2026-03-17",
+      "provider": "azure_ai",
+      "input_per_million": 0.75,
+      "output_per_million": 4.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/gpt-5.4-nano": {
+      "name": "azure_ai/gpt-5.4-nano",
+      "provider": "azure_ai",
+      "input_per_million": 0.2,
+      "output_per_million": 1.25,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/gpt-5.4-nano-2026-03-17": {
+      "name": "azure_ai/gpt-5.4-nano-2026-03-17",
+      "provider": "azure_ai",
+      "input_per_million": 0.2,
+      "output_per_million": 1.25,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/model_router": {
+      "name": "azure_ai/model_router",
+      "provider": "azure_ai",
+      "input_per_million": 0.14,
+      "output_per_million": 0,
+      "context_window": 32768,
+      "mode": "chat"
+    },
+    "azure_ai/model-router": {
+      "name": "azure_ai/model-router",
+      "provider": "azure_ai",
+      "input_per_million": 0.14,
+      "output_per_million": 0,
+      "context_window": 32768,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-4o-2024-08-06": {
+      "name": "azure/eu/gpt-4o-2024-08-06",
+      "provider": "azure",
+      "input_per_million": 2.75,
+      "output_per_million": 11.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-4o-2024-11-20": {
+      "name": "azure/eu/gpt-4o-2024-11-20",
+      "provider": "azure",
+      "input_per_million": 2.75,
+      "output_per_million": 11.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-4o-mini-2024-07-18": {
+      "name": "azure/eu/gpt-4o-mini-2024-07-18",
+      "provider": "azure",
+      "input_per_million": 0.165,
+      "output_per_million": 0.66,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-4o-mini-realtime-preview-2024-12-17": {
+      "name": "azure/eu/gpt-4o-mini-realtime-preview-2024-12-17",
+      "provider": "azure",
+      "input_per_million": 0.66,
+      "output_per_million": 2.64,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/eu/gpt-4o-realtime-preview-2024-10-01": {
+      "name": "azure/eu/gpt-4o-realtime-preview-2024-10-01",
+      "provider": "azure",
+      "input_per_million": 5.5,
+      "output_per_million": 22.0,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/eu/gpt-4o-realtime-preview-2024-12-17": {
+      "name": "azure/eu/gpt-4o-realtime-preview-2024-12-17",
+      "provider": "azure",
+      "input_per_million": 5.5,
+      "output_per_million": 22.0,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/eu/gpt-5-2025-08-07": {
+      "name": "azure/eu/gpt-5-2025-08-07",
+      "provider": "azure",
+      "input_per_million": 1.375,
+      "output_per_million": 11.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-5-mini-2025-08-07": {
+      "name": "azure/eu/gpt-5-mini-2025-08-07",
+      "provider": "azure",
+      "input_per_million": 0.275,
+      "output_per_million": 2.2,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-5.1": {
+      "name": "azure/eu/gpt-5.1",
+      "provider": "azure",
+      "input_per_million": 1.375,
+      "output_per_million": 11.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-5.1-codex": {
+      "name": "azure/eu/gpt-5.1-codex",
+      "provider": "azure",
+      "input_per_million": 1.375,
+      "output_per_million": 11.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/eu/gpt-5.1-codex-mini": {
+      "name": "azure/eu/gpt-5.1-codex-mini",
+      "provider": "azure",
+      "input_per_million": 0.275,
+      "output_per_million": 2.2,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/eu/gpt-5-nano-2025-08-07": {
+      "name": "azure/eu/gpt-5-nano-2025-08-07",
+      "provider": "azure",
+      "input_per_million": 0.055,
+      "output_per_million": 0.44,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/eu/o1-2024-12-17": {
+      "name": "azure/eu/o1-2024-12-17",
+      "provider": "azure",
+      "input_per_million": 16.5,
+      "output_per_million": 66.0,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/eu/o1-mini-2024-09-12": {
+      "name": "azure/eu/o1-mini-2024-09-12",
+      "provider": "azure",
+      "input_per_million": 1.21,
+      "output_per_million": 4.84,
+      "context_window": 65536,
+      "mode": "chat"
+    },
+    "azure/eu/o3-mini-2025-01-31": {
+      "name": "azure/eu/o3-mini-2025-01-31",
+      "provider": "azure",
+      "input_per_million": 1.21,
+      "output_per_million": 4.84,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/global-standard/gpt-4o-2024-08-06": {
+      "name": "azure/global-standard/gpt-4o-2024-08-06",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/global-standard/gpt-4o-2024-11-20": {
+      "name": "azure/global-standard/gpt-4o-2024-11-20",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/global-standard/gpt-4o-mini": {
+      "name": "azure/global-standard/gpt-4o-mini",
+      "provider": "azure",
+      "input_per_million": 0.15,
+      "output_per_million": 0.6,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/global/gpt-4o-2024-08-06": {
+      "name": "azure/global/gpt-4o-2024-08-06",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/global/gpt-4o-2024-11-20": {
+      "name": "azure/global/gpt-4o-2024-11-20",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/global/gpt-5.1": {
+      "name": "azure/global/gpt-5.1",
+      "provider": "azure",
+      "input_per_million": 1.25,
+      "output_per_million": 10.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/global/gpt-5.1-codex": {
+      "name": "azure/global/gpt-5.1-codex",
+      "provider": "azure",
+      "input_per_million": 1.25,
+      "output_per_million": 10.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/global/gpt-5.1-codex-mini": {
+      "name": "azure/global/gpt-5.1-codex-mini",
+      "provider": "azure",
+      "input_per_million": 0.25,
+      "output_per_million": 2.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-3.5-turbo": {
+      "name": "azure/gpt-3.5-turbo",
+      "provider": "azure",
+      "input_per_million": 0.5,
+      "output_per_million": 1.5,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-3.5-turbo-instruct-0914": {
+      "name": "azure/gpt-3.5-turbo-instruct-0914",
+      "provider": "azure_text",
+      "input_per_million": 1.5,
+      "output_per_million": 2.0,
+      "context_window": 4097,
+      "mode": "completion"
+    },
+    "azure/gpt-35-turbo": {
+      "name": "azure/gpt-35-turbo",
+      "provider": "azure",
+      "input_per_million": 0.5,
+      "output_per_million": 1.5,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-35-turbo-16k": {
+      "name": "azure/gpt-35-turbo-16k",
+      "provider": "azure",
+      "input_per_million": 3.0,
+      "output_per_million": 4.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-35-turbo-16k-0613": {
+      "name": "azure/gpt-35-turbo-16k-0613",
+      "provider": "azure",
+      "input_per_million": 3.0,
+      "output_per_million": 4.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-35-turbo-instruct": {
+      "name": "azure/gpt-35-turbo-instruct",
+      "provider": "azure_text",
+      "input_per_million": 1.5,
+      "output_per_million": 2.0,
+      "context_window": 4097,
+      "mode": "completion"
+    },
+    "azure/gpt-35-turbo-instruct-0914": {
+      "name": "azure/gpt-35-turbo-instruct-0914",
+      "provider": "azure_text",
+      "input_per_million": 1.5,
+      "output_per_million": 2.0,
+      "context_window": 4097,
+      "mode": "completion"
+    },
+    "azure/gpt-4": {
+      "name": "azure/gpt-4",
+      "provider": "azure",
+      "input_per_million": 30.0,
+      "output_per_million": 60.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-4-0125-preview": {
+      "name": "azure/gpt-4-0125-preview",
+      "provider": "azure",
+      "input_per_million": 10.0,
+      "output_per_million": 30.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-4-0613": {
+      "name": "azure/gpt-4-0613",
+      "provider": "azure",
+      "input_per_million": 30.0,
+      "output_per_million": 60.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-4-1106-preview": {
+      "name": "azure/gpt-4-1106-preview",
+      "provider": "azure",
+      "input_per_million": 10.0,
+      "output_per_million": 30.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-4-32k": {
+      "name": "azure/gpt-4-32k",
+      "provider": "azure",
+      "input_per_million": 60.0,
+      "output_per_million": 120.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-4-32k-0613": {
+      "name": "azure/gpt-4-32k-0613",
+      "provider": "azure",
+      "input_per_million": 60.0,
+      "output_per_million": 120.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-4-turbo": {
+      "name": "azure/gpt-4-turbo",
+      "provider": "azure",
+      "input_per_million": 10.0,
+      "output_per_million": 30.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-4-turbo-2024-04-09": {
+      "name": "azure/gpt-4-turbo-2024-04-09",
+      "provider": "azure",
+      "input_per_million": 10.0,
+      "output_per_million": 30.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-4-turbo-vision-preview": {
+      "name": "azure/gpt-4-turbo-vision-preview",
+      "provider": "azure",
+      "input_per_million": 10.0,
+      "output_per_million": 30.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-4.1": {
+      "name": "azure/gpt-4.1",
+      "provider": "azure",
+      "input_per_million": 2.0,
+      "output_per_million": 8.0,
+      "context_window": 32768,
+      "mode": "chat"
+    },
+    "azure/gpt-4.1-2025-04-14": {
+      "name": "azure/gpt-4.1-2025-04-14",
+      "provider": "azure",
+      "input_per_million": 2.0,
+      "output_per_million": 8.0,
+      "context_window": 32768,
+      "mode": "chat"
+    },
+    "azure/gpt-4.1-mini": {
+      "name": "azure/gpt-4.1-mini",
+      "provider": "azure",
+      "input_per_million": 0.4,
+      "output_per_million": 1.6,
+      "context_window": 32768,
+      "mode": "chat"
+    },
+    "azure/gpt-4.1-mini-2025-04-14": {
+      "name": "azure/gpt-4.1-mini-2025-04-14",
+      "provider": "azure",
+      "input_per_million": 0.4,
+      "output_per_million": 1.6,
+      "context_window": 32768,
+      "mode": "chat"
+    },
+    "azure/gpt-4.1-nano": {
+      "name": "azure/gpt-4.1-nano",
+      "provider": "azure",
+      "input_per_million": 0.1,
+      "output_per_million": 0.4,
+      "context_window": 32768,
+      "mode": "chat"
+    },
+    "azure/gpt-4.1-nano-2025-04-14": {
+      "name": "azure/gpt-4.1-nano-2025-04-14",
+      "provider": "azure",
+      "input_per_million": 0.1,
+      "output_per_million": 0.4,
+      "context_window": 32768,
+      "mode": "chat"
+    },
+    "azure/gpt-4.5-preview": {
+      "name": "azure/gpt-4.5-preview",
+      "provider": "azure",
+      "input_per_million": 75.0,
+      "output_per_million": 150.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/gpt-4o": {
+      "name": "azure/gpt-4o",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/gpt-4o-2024-05-13": {
+      "name": "azure/gpt-4o-2024-05-13",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 15.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure/gpt-4o-2024-08-06": {
+      "name": "azure/gpt-4o-2024-08-06",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/gpt-4o-2024-11-20": {
+      "name": "azure/gpt-4o-2024-11-20",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/gpt-audio-2025-08-28": {
+      "name": "azure/gpt-audio-2025-08-28",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/gpt-audio-1.5-2026-02-23": {
+      "name": "azure/gpt-audio-1.5-2026-02-23",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/gpt-audio-mini": {
+      "name": "azure/gpt-audio-mini",
+      "provider": "azure",
+      "input_per_million": 0.6,
+      "output_per_million": 2.4,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/gpt-audio-mini-2025-10-06": {
+      "name": "azure/gpt-audio-mini-2025-10-06",
+      "provider": "azure",
+      "input_per_million": 0.6,
+      "output_per_million": 2.4,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/gpt-4o-audio-preview-2024-12-17": {
+      "name": "azure/gpt-4o-audio-preview-2024-12-17",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/gpt-4o-mini": {
+      "name": "azure/gpt-4o-mini",
+      "provider": "azure",
+      "input_per_million": 0.165,
+      "output_per_million": 0.66,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/gpt-4o-mini-2024-07-18": {
+      "name": "azure/gpt-4o-mini-2024-07-18",
+      "provider": "azure",
+      "input_per_million": 0.15,
+      "output_per_million": 0.6,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/gpt-4o-mini-audio-preview-2024-12-17": {
+      "name": "azure/gpt-4o-mini-audio-preview-2024-12-17",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/gpt-4o-mini-realtime-preview-2024-12-17": {
+      "name": "azure/gpt-4o-mini-realtime-preview-2024-12-17",
+      "provider": "azure",
+      "input_per_million": 0.6,
+      "output_per_million": 2.4,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/gpt-realtime-2025-08-28": {
+      "name": "azure/gpt-realtime-2025-08-28",
+      "provider": "azure",
+      "input_per_million": 4.0,
+      "output_per_million": 16.0,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/gpt-realtime-1.5-2026-02-23": {
+      "name": "azure/gpt-realtime-1.5-2026-02-23",
+      "provider": "azure",
+      "input_per_million": 4.0,
+      "output_per_million": 16.0,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/gpt-realtime-2.1": {
+      "name": "azure/gpt-realtime-2.1",
+      "provider": "azure",
+      "input_per_million": 4.0,
+      "output_per_million": 24.0,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/gpt-realtime-2.1-mini": {
+      "name": "azure/gpt-realtime-2.1-mini",
+      "provider": "azure",
+      "input_per_million": 0.6,
+      "output_per_million": 2.4,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/gpt-realtime-mini": {
+      "name": "azure/gpt-realtime-mini",
+      "provider": "azure",
+      "input_per_million": 0.6,
+      "output_per_million": 2.4,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/gpt-realtime-mini-2025-10-06": {
+      "name": "azure/gpt-realtime-mini-2025-10-06",
+      "provider": "azure",
+      "input_per_million": 0.6,
+      "output_per_million": 2.4,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/gpt-4o-mini-transcribe": {
+      "name": "azure/gpt-4o-mini-transcribe",
+      "provider": "azure",
+      "input_per_million": 1.25,
+      "output_per_million": 5.0,
+      "context_window": 16000,
+      "mode": "audio_transcription"
+    },
+    "azure/gpt-4o-mini-tts": {
+      "name": "azure/gpt-4o-mini-tts",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 0,
+      "mode": "audio_speech"
+    },
+    "azure/gpt-4o-realtime-preview-2024-10-01": {
+      "name": "azure/gpt-4o-realtime-preview-2024-10-01",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 20.0,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/gpt-4o-realtime-preview-2024-12-17": {
+      "name": "azure/gpt-4o-realtime-preview-2024-12-17",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 20.0,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/gpt-4o-transcribe": {
+      "name": "azure/gpt-4o-transcribe",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 16000,
+      "mode": "audio_transcription"
+    },
+    "azure/gpt-4o-transcribe-diarize": {
+      "name": "azure/gpt-4o-transcribe-diarize",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 16000,
+      "mode": "audio_transcription"
+    },
+    "azure/gpt-realtime-whisper": {
+      "name": "azure/gpt-realtime-whisper",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "audio_transcription"
+    },
+    "azure/gpt-5.1-2025-11-13": {
+      "name": "azure/gpt-5.1-2025-11-13",
+      "provider": "azure",
+      "input_per_million": 1.25,
+      "output_per_million": 10.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.1-codex-2025-11-13": {
+      "name": "azure/gpt-5.1-codex-2025-11-13",
+      "provider": "azure",
+      "input_per_million": 1.25,
+      "output_per_million": 10.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5.1-codex-mini-2025-11-13": {
+      "name": "azure/gpt-5.1-codex-mini-2025-11-13",
+      "provider": "azure",
+      "input_per_million": 0.25,
+      "output_per_million": 2.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5": {
+      "name": "azure/gpt-5",
+      "provider": "azure",
+      "input_per_million": 1.25,
+      "output_per_million": 10.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5-2025-08-07": {
+      "name": "azure/gpt-5-2025-08-07",
+      "provider": "azure",
+      "input_per_million": 1.25,
+      "output_per_million": 10.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5-codex": {
+      "name": "azure/gpt-5-codex",
+      "provider": "azure",
+      "input_per_million": 1.25,
+      "output_per_million": 10.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5-mini": {
+      "name": "azure/gpt-5-mini",
+      "provider": "azure",
+      "input_per_million": 0.25,
+      "output_per_million": 2.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5-mini-2025-08-07": {
+      "name": "azure/gpt-5-mini-2025-08-07",
+      "provider": "azure",
+      "input_per_million": 0.25,
+      "output_per_million": 2.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5-nano": {
+      "name": "azure/gpt-5-nano",
+      "provider": "azure",
+      "input_per_million": 0.05,
+      "output_per_million": 0.4,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5-nano-2025-08-07": {
+      "name": "azure/gpt-5-nano-2025-08-07",
+      "provider": "azure",
+      "input_per_million": 0.05,
+      "output_per_million": 0.4,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5-pro": {
+      "name": "azure/gpt-5-pro",
+      "provider": "azure",
+      "input_per_million": 15.0,
+      "output_per_million": 120.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5.1": {
+      "name": "azure/gpt-5.1",
+      "provider": "azure",
+      "input_per_million": 1.25,
+      "output_per_million": 10.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.1-codex": {
+      "name": "azure/gpt-5.1-codex",
+      "provider": "azure",
+      "input_per_million": 1.25,
+      "output_per_million": 10.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5.1-codex-max": {
+      "name": "azure/gpt-5.1-codex-max",
+      "provider": "azure",
+      "input_per_million": 1.25,
+      "output_per_million": 10.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5.1-codex-mini": {
+      "name": "azure/gpt-5.1-codex-mini",
+      "provider": "azure",
+      "input_per_million": 0.25,
+      "output_per_million": 2.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5.2": {
+      "name": "azure/gpt-5.2",
+      "provider": "azure",
+      "input_per_million": 1.75,
+      "output_per_million": 14.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.2-2025-12-11": {
+      "name": "azure/gpt-5.2-2025-12-11",
+      "provider": "azure",
+      "input_per_million": 1.75,
+      "output_per_million": 14.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.2-codex": {
+      "name": "azure/gpt-5.2-codex",
+      "provider": "azure",
+      "input_per_million": 1.75,
+      "output_per_million": 14.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5.3-codex": {
+      "name": "azure/gpt-5.3-codex",
+      "provider": "azure",
+      "input_per_million": 1.75,
+      "output_per_million": 14.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5.2-pro": {
+      "name": "azure/gpt-5.2-pro",
+      "provider": "azure",
+      "input_per_million": 21.0,
+      "output_per_million": 168.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5.2-pro-2025-12-11": {
+      "name": "azure/gpt-5.2-pro-2025-12-11",
+      "provider": "azure",
+      "input_per_million": 21.0,
+      "output_per_million": 168.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5.4": {
+      "name": "azure/gpt-5.4",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 15.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-5.4": {
+      "name": "azure/us/gpt-5.4",
+      "provider": "azure",
+      "input_per_million": 2.75,
+      "output_per_million": 16.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-5.4": {
+      "name": "azure/eu/gpt-5.4",
+      "provider": "azure",
+      "input_per_million": 2.75,
+      "output_per_million": 16.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.4-2026-03-05": {
+      "name": "azure/gpt-5.4-2026-03-05",
+      "provider": "azure",
+      "input_per_million": 2.5,
+      "output_per_million": 15.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-5.4-2026-03-05": {
+      "name": "azure/us/gpt-5.4-2026-03-05",
+      "provider": "azure",
+      "input_per_million": 2.75,
+      "output_per_million": 16.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-5.4-2026-03-05": {
+      "name": "azure/eu/gpt-5.4-2026-03-05",
+      "provider": "azure",
+      "input_per_million": 2.75,
+      "output_per_million": 16.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.4-pro": {
+      "name": "azure/gpt-5.4-pro",
+      "provider": "azure",
+      "input_per_million": 30.0,
+      "output_per_million": 180.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5.4-pro-2026-03-05": {
+      "name": "azure/gpt-5.4-pro-2026-03-05",
+      "provider": "azure",
+      "input_per_million": 30.0,
+      "output_per_million": 180.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5.6": {
+      "name": "azure/gpt-5.6",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 30.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.6-sol": {
+      "name": "azure/gpt-5.6-sol",
+      "provider": "azure",
+      "input_per_million": 4.0,
+      "output_per_million": 20.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.6-sol-2026-07-09": {
+      "name": "azure/gpt-5.6-sol-2026-07-09",
+      "provider": "azure",
+      "input_per_million": 4.0,
+      "output_per_million": 20.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.6-terra": {
+      "name": "azure/gpt-5.6-terra",
+      "provider": "azure",
+      "input_per_million": 2.0,
+      "output_per_million": 12.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.6-terra-2026-07-09": {
+      "name": "azure/gpt-5.6-terra-2026-07-09",
+      "provider": "azure",
+      "input_per_million": 2.0,
+      "output_per_million": 12.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.6-luna": {
+      "name": "azure/gpt-5.6-luna",
+      "provider": "azure",
+      "input_per_million": 0.2,
+      "output_per_million": 1.2,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.6-luna-2026-07-09": {
+      "name": "azure/gpt-5.6-luna-2026-07-09",
+      "provider": "azure",
+      "input_per_million": 0.2,
+      "output_per_million": 1.2,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-6-astra": {
+      "name": "azure/gpt-6-astra",
+      "provider": "azure",
+      "input_per_million": 10.0,
+      "output_per_million": 50.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-6-astra-2026-09-03": {
+      "name": "azure/gpt-6-astra-2026-09-03",
+      "provider": "azure",
+      "input_per_million": 10.0,
+      "output_per_million": 50.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-chat-latest": {
+      "name": "azure/gpt-chat-latest",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 30.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/chat-latest": {
+      "name": "azure/chat-latest",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 30.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-5.6": {
+      "name": "azure/us/gpt-5.6",
+      "provider": "azure",
+      "input_per_million": 5.5,
+      "output_per_million": 33.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-5.6-sol": {
+      "name": "azure/us/gpt-5.6-sol",
+      "provider": "azure",
+      "input_per_million": 4.4,
+      "output_per_million": 22.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-5.6-terra": {
+      "name": "azure/us/gpt-5.6-terra",
+      "provider": "azure",
+      "input_per_million": 2.2,
+      "output_per_million": 13.2,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-5.6-luna": {
+      "name": "azure/us/gpt-5.6-luna",
+      "provider": "azure",
+      "input_per_million": 0.22,
+      "output_per_million": 1.32,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-6-astra": {
+      "name": "azure/us/gpt-6-astra",
+      "provider": "azure",
+      "input_per_million": 11.0,
+      "output_per_million": 55.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-chat-latest": {
+      "name": "azure/us/gpt-chat-latest",
+      "provider": "azure",
+      "input_per_million": 5.5,
+      "output_per_million": 33.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-5.6": {
+      "name": "azure/eu/gpt-5.6",
+      "provider": "azure",
+      "input_per_million": 5.5,
+      "output_per_million": 33.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-5.6-sol": {
+      "name": "azure/eu/gpt-5.6-sol",
+      "provider": "azure",
+      "input_per_million": 4.4,
+      "output_per_million": 22.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-5.6-terra": {
+      "name": "azure/eu/gpt-5.6-terra",
+      "provider": "azure",
+      "input_per_million": 2.2,
+      "output_per_million": 13.2,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-5.6-luna": {
+      "name": "azure/eu/gpt-5.6-luna",
+      "provider": "azure",
+      "input_per_million": 0.22,
+      "output_per_million": 1.32,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.5": {
+      "name": "azure/gpt-5.5",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 30.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-5.5": {
+      "name": "azure/us/gpt-5.5",
+      "provider": "azure",
+      "input_per_million": 5.5,
+      "output_per_million": 33.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-5.5": {
+      "name": "azure/eu/gpt-5.5",
+      "provider": "azure",
+      "input_per_million": 5.5,
+      "output_per_million": 33.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.5-2026-04-23": {
+      "name": "azure/gpt-5.5-2026-04-23",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 30.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.5-2026-04-24": {
+      "name": "azure/gpt-5.5-2026-04-24",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 30.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-5.5-2026-04-23": {
+      "name": "azure/us/gpt-5.5-2026-04-23",
+      "provider": "azure",
+      "input_per_million": 5.5,
+      "output_per_million": 33.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-5.5-2026-04-24": {
+      "name": "azure/us/gpt-5.5-2026-04-24",
+      "provider": "azure",
+      "input_per_million": 5.5,
+      "output_per_million": 33.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-5.5-2026-04-23": {
+      "name": "azure/eu/gpt-5.5-2026-04-23",
+      "provider": "azure",
+      "input_per_million": 5.5,
+      "output_per_million": 33.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/eu/gpt-5.5-2026-04-24": {
+      "name": "azure/eu/gpt-5.5-2026-04-24",
+      "provider": "azure",
+      "input_per_million": 5.5,
+      "output_per_million": 33.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.5-pro": {
+      "name": "azure/gpt-5.5-pro",
+      "provider": "azure",
+      "input_per_million": 30.0,
+      "output_per_million": 180.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5.5-pro-2026-04-23": {
+      "name": "azure/gpt-5.5-pro-2026-04-23",
+      "provider": "azure",
+      "input_per_million": 30.0,
+      "output_per_million": 180.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/gpt-5.4-mini": {
+      "name": "azure/gpt-5.4-mini",
+      "provider": "azure",
+      "input_per_million": 0.75,
+      "output_per_million": 4.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.4-mini-2026-03-17": {
+      "name": "azure/gpt-5.4-mini-2026-03-17",
+      "provider": "azure",
+      "input_per_million": 0.75,
+      "output_per_million": 4.5,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.4-nano": {
+      "name": "azure/gpt-5.4-nano",
+      "provider": "azure",
+      "input_per_million": 0.2,
+      "output_per_million": 1.25,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-5.4-nano-2026-03-17": {
+      "name": "azure/gpt-5.4-nano-2026-03-17",
+      "provider": "azure",
+      "input_per_million": 0.2,
+      "output_per_million": 1.25,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/gpt-image-1": {
+      "name": "azure/gpt-image-1",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/hd/1024-x-1024/dall-e-3": {
+      "name": "azure/hd/1024-x-1024/dall-e-3",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/hd/1024-x-1792/dall-e-3": {
+      "name": "azure/hd/1024-x-1792/dall-e-3",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/hd/1792-x-1024/dall-e-3": {
+      "name": "azure/hd/1792-x-1024/dall-e-3",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/high/1024-x-1024/gpt-image-1": {
+      "name": "azure/high/1024-x-1024/gpt-image-1",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/high/1024-x-1536/gpt-image-1": {
+      "name": "azure/high/1024-x-1536/gpt-image-1",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/high/1536-x-1024/gpt-image-1": {
+      "name": "azure/high/1536-x-1024/gpt-image-1",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/low/1024-x-1024/gpt-image-1": {
+      "name": "azure/low/1024-x-1024/gpt-image-1",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/low/1024-x-1536/gpt-image-1": {
+      "name": "azure/low/1024-x-1536/gpt-image-1",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/low/1536-x-1024/gpt-image-1": {
+      "name": "azure/low/1536-x-1024/gpt-image-1",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/medium/1024-x-1024/gpt-image-1": {
+      "name": "azure/medium/1024-x-1024/gpt-image-1",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/medium/1024-x-1536/gpt-image-1": {
+      "name": "azure/medium/1024-x-1536/gpt-image-1",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/medium/1536-x-1024/gpt-image-1": {
+      "name": "azure/medium/1536-x-1024/gpt-image-1",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/gpt-image-1-mini": {
+      "name": "azure/gpt-image-1-mini",
+      "provider": "azure",
+      "input_per_million": 2.0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/gpt-image-1.5": {
+      "name": "azure/gpt-image-1.5",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/gpt-image-1.5-2025-12-16": {
+      "name": "azure/gpt-image-1.5-2025-12-16",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/gpt-image-2": {
+      "name": "azure/gpt-image-2",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/gpt-image-2.5-flare": {
+      "name": "azure/gpt-image-2.5-flare",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/gpt-image-2.5-sunburst": {
+      "name": "azure/gpt-image-2.5-sunburst",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/gpt-image-2-2026-04-21": {
+      "name": "azure/gpt-image-2-2026-04-21",
+      "provider": "azure",
+      "input_per_million": 5.0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/low/1024-x-1024/gpt-image-1-mini": {
+      "name": "azure/low/1024-x-1024/gpt-image-1-mini",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/low/1024-x-1536/gpt-image-1-mini": {
+      "name": "azure/low/1024-x-1536/gpt-image-1-mini",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/low/1536-x-1024/gpt-image-1-mini": {
+      "name": "azure/low/1536-x-1024/gpt-image-1-mini",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/medium/1024-x-1024/gpt-image-1-mini": {
+      "name": "azure/medium/1024-x-1024/gpt-image-1-mini",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/medium/1024-x-1536/gpt-image-1-mini": {
+      "name": "azure/medium/1024-x-1536/gpt-image-1-mini",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/medium/1536-x-1024/gpt-image-1-mini": {
+      "name": "azure/medium/1536-x-1024/gpt-image-1-mini",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/high/1024-x-1024/gpt-image-1-mini": {
+      "name": "azure/high/1024-x-1024/gpt-image-1-mini",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/high/1024-x-1536/gpt-image-1-mini": {
+      "name": "azure/high/1024-x-1536/gpt-image-1-mini",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/high/1536-x-1024/gpt-image-1-mini": {
+      "name": "azure/high/1536-x-1024/gpt-image-1-mini",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/mistral-large-2402": {
+      "name": "azure/mistral-large-2402",
+      "provider": "azure",
+      "input_per_million": 8.0,
+      "output_per_million": 24.0,
+      "context_window": 32000,
+      "mode": "chat"
+    },
+    "azure/mistral-large-latest": {
+      "name": "azure/mistral-large-latest",
+      "provider": "azure",
+      "input_per_million": 8.0,
+      "output_per_million": 24.0,
+      "context_window": 32000,
+      "mode": "chat"
+    },
+    "azure/o1": {
+      "name": "azure/o1",
+      "provider": "azure",
+      "input_per_million": 15.0,
+      "output_per_million": 60.0,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/o1-2024-12-17": {
+      "name": "azure/o1-2024-12-17",
+      "provider": "azure",
+      "input_per_million": 15.0,
+      "output_per_million": 60.0,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/o1-mini": {
+      "name": "azure/o1-mini",
+      "provider": "azure",
+      "input_per_million": 1.1,
+      "output_per_million": 4.4,
+      "context_window": 65536,
+      "mode": "chat"
+    },
+    "azure/o1-mini-2024-09-12": {
+      "name": "azure/o1-mini-2024-09-12",
+      "provider": "azure",
+      "input_per_million": 1.1,
+      "output_per_million": 4.4,
+      "context_window": 65536,
+      "mode": "chat"
+    },
+    "azure/o3": {
+      "name": "azure/o3",
+      "provider": "azure",
+      "input_per_million": 2.0,
+      "output_per_million": 8.0,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/o3-2025-04-16": {
+      "name": "azure/o3-2025-04-16",
+      "provider": "azure",
+      "input_per_million": 2.0,
+      "output_per_million": 8.0,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/o3-deep-research": {
+      "name": "azure/o3-deep-research",
+      "provider": "azure",
+      "input_per_million": 10.0,
+      "output_per_million": 40.0,
+      "context_window": 100000,
+      "mode": "responses"
+    },
+    "azure/o3-mini": {
+      "name": "azure/o3-mini",
+      "provider": "azure",
+      "input_per_million": 1.1,
+      "output_per_million": 4.4,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/o3-mini-2025-01-31": {
+      "name": "azure/o3-mini-2025-01-31",
+      "provider": "azure",
+      "input_per_million": 1.1,
+      "output_per_million": 4.4,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/o3-pro": {
+      "name": "azure/o3-pro",
+      "provider": "azure",
+      "input_per_million": 20.0,
+      "output_per_million": 80.0,
+      "context_window": 100000,
+      "mode": "responses"
+    },
+    "azure/o3-pro-2025-06-10": {
+      "name": "azure/o3-pro-2025-06-10",
+      "provider": "azure",
+      "input_per_million": 20.0,
+      "output_per_million": 80.0,
+      "context_window": 100000,
+      "mode": "responses"
+    },
+    "azure/o4-mini": {
+      "name": "azure/o4-mini",
+      "provider": "azure",
+      "input_per_million": 1.1,
+      "output_per_million": 4.4,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/o4-mini-2025-04-16": {
+      "name": "azure/o4-mini-2025-04-16",
+      "provider": "azure",
+      "input_per_million": 1.1,
+      "output_per_million": 4.4,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/standard/1024-x-1024/dall-e-2": {
+      "name": "azure/standard/1024-x-1024/dall-e-2",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/standard/1024-x-1024/dall-e-3": {
+      "name": "azure/standard/1024-x-1024/dall-e-3",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/standard/1024-x-1792/dall-e-3": {
+      "name": "azure/standard/1024-x-1792/dall-e-3",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/standard/1792-x-1024/dall-e-3": {
+      "name": "azure/standard/1792-x-1024/dall-e-3",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure/text-embedding-3-large": {
+      "name": "azure/text-embedding-3-large",
+      "provider": "azure",
+      "input_per_million": 0.13,
+      "output_per_million": 0,
+      "context_window": 8191,
+      "mode": "embedding"
+    },
+    "azure/text-embedding-3-small": {
+      "name": "azure/text-embedding-3-small",
+      "provider": "azure",
+      "input_per_million": 0.02,
+      "output_per_million": 0,
+      "context_window": 8191,
+      "mode": "embedding"
+    },
+    "azure/text-embedding-ada-002": {
+      "name": "azure/text-embedding-ada-002",
+      "provider": "azure",
+      "input_per_million": 0.1,
+      "output_per_million": 0,
+      "context_window": 8191,
+      "mode": "embedding"
+    },
+    "azure/speech/azure-tts": {
+      "name": "azure/speech/azure-tts",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "audio_speech"
+    },
+    "azure/speech/azure-tts-hd": {
+      "name": "azure/speech/azure-tts-hd",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "audio_speech"
+    },
+    "azure/speech/azure-stt": {
+      "name": "azure/speech/azure-stt",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "audio_transcription"
+    },
+    "azure/tts-1": {
+      "name": "azure/tts-1",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "audio_speech"
+    },
+    "azure/tts-1-hd": {
+      "name": "azure/tts-1-hd",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "audio_speech"
+    },
+    "azure/us/gpt-4.1-2025-04-14": {
+      "name": "azure/us/gpt-4.1-2025-04-14",
+      "provider": "azure",
+      "input_per_million": 2.2,
+      "output_per_million": 8.8,
+      "context_window": 32768,
+      "mode": "chat"
+    },
+    "azure/us/gpt-4.1-mini-2025-04-14": {
+      "name": "azure/us/gpt-4.1-mini-2025-04-14",
+      "provider": "azure",
+      "input_per_million": 0.44,
+      "output_per_million": 1.76,
+      "context_window": 32768,
+      "mode": "chat"
+    },
+    "azure/us/gpt-4.1-nano-2025-04-14": {
+      "name": "azure/us/gpt-4.1-nano-2025-04-14",
+      "provider": "azure",
+      "input_per_million": 0.11,
+      "output_per_million": 0.44,
+      "context_window": 32768,
+      "mode": "chat"
+    },
+    "azure/us/gpt-4o-2024-08-06": {
+      "name": "azure/us/gpt-4o-2024-08-06",
+      "provider": "azure",
+      "input_per_million": 2.75,
+      "output_per_million": 11.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/us/gpt-4o-2024-11-20": {
+      "name": "azure/us/gpt-4o-2024-11-20",
+      "provider": "azure",
+      "input_per_million": 2.75,
+      "output_per_million": 11.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/us/gpt-4o-mini-2024-07-18": {
+      "name": "azure/us/gpt-4o-mini-2024-07-18",
+      "provider": "azure",
+      "input_per_million": 0.165,
+      "output_per_million": 0.66,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure/us/gpt-4o-mini-realtime-preview-2024-12-17": {
+      "name": "azure/us/gpt-4o-mini-realtime-preview-2024-12-17",
+      "provider": "azure",
+      "input_per_million": 0.66,
+      "output_per_million": 2.64,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/us/gpt-4o-realtime-preview-2024-10-01": {
+      "name": "azure/us/gpt-4o-realtime-preview-2024-10-01",
+      "provider": "azure",
+      "input_per_million": 5.5,
+      "output_per_million": 22.0,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/us/gpt-4o-realtime-preview-2024-12-17": {
+      "name": "azure/us/gpt-4o-realtime-preview-2024-12-17",
+      "provider": "azure",
+      "input_per_million": 5.5,
+      "output_per_million": 22.0,
+      "context_window": 4096,
+      "mode": "realtime"
+    },
+    "azure/us/gpt-5-2025-08-07": {
+      "name": "azure/us/gpt-5-2025-08-07",
+      "provider": "azure",
+      "input_per_million": 1.375,
+      "output_per_million": 11.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-5-mini-2025-08-07": {
+      "name": "azure/us/gpt-5-mini-2025-08-07",
+      "provider": "azure",
+      "input_per_million": 0.275,
+      "output_per_million": 2.2,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-5-nano-2025-08-07": {
+      "name": "azure/us/gpt-5-nano-2025-08-07",
+      "provider": "azure",
+      "input_per_million": 0.055,
+      "output_per_million": 0.44,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-5.1": {
+      "name": "azure/us/gpt-5.1",
+      "provider": "azure",
+      "input_per_million": 1.375,
+      "output_per_million": 11.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure/us/gpt-5.1-codex": {
+      "name": "azure/us/gpt-5.1-codex",
+      "provider": "azure",
+      "input_per_million": 1.375,
+      "output_per_million": 11.0,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/us/gpt-5.1-codex-mini": {
+      "name": "azure/us/gpt-5.1-codex-mini",
+      "provider": "azure",
+      "input_per_million": 0.275,
+      "output_per_million": 2.2,
+      "context_window": 128000,
+      "mode": "responses"
+    },
+    "azure/us/o1-2024-12-17": {
+      "name": "azure/us/o1-2024-12-17",
+      "provider": "azure",
+      "input_per_million": 16.5,
+      "output_per_million": 66.0,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/us/o1-mini-2024-09-12": {
+      "name": "azure/us/o1-mini-2024-09-12",
+      "provider": "azure",
+      "input_per_million": 1.21,
+      "output_per_million": 4.84,
+      "context_window": 65536,
+      "mode": "chat"
+    },
+    "azure/us/o3-2025-04-16": {
+      "name": "azure/us/o3-2025-04-16",
+      "provider": "azure",
+      "input_per_million": 2.2,
+      "output_per_million": 8.8,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/us/o3-mini-2025-01-31": {
+      "name": "azure/us/o3-mini-2025-01-31",
+      "provider": "azure",
+      "input_per_million": 1.21,
+      "output_per_million": 4.84,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/us/o4-mini-2025-04-16": {
+      "name": "azure/us/o4-mini-2025-04-16",
+      "provider": "azure",
+      "input_per_million": 1.21,
+      "output_per_million": 4.84,
+      "context_window": 100000,
+      "mode": "chat"
+    },
+    "azure/whisper-1": {
+      "name": "azure/whisper-1",
+      "provider": "azure",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "audio_transcription"
+    },
+    "azure_ai/cohere-embed-v3-english": {
+      "name": "azure_ai/Cohere-embed-v3-english",
+      "provider": "azure_ai",
+      "input_per_million": 0.1,
+      "output_per_million": 0,
+      "context_window": 512,
+      "mode": "embedding"
+    },
+    "azure_ai/cohere-embed-v3-multilingual": {
+      "name": "azure_ai/Cohere-embed-v3-multilingual",
+      "provider": "azure_ai",
+      "input_per_million": 0.1,
+      "output_per_million": 0,
+      "context_window": 512,
+      "mode": "embedding"
+    },
+    "azure_ai/codestral-2501": {
+      "name": "azure_ai/Codestral-2501",
+      "provider": "azure_ai",
+      "input_per_million": 0.3,
+      "output_per_million": 0.9,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/flux-1.1-pro": {
+      "name": "azure_ai/FLUX-1.1-pro",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure_ai/flux.1-kontext-pro": {
+      "name": "azure_ai/FLUX.1-Kontext-pro",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure_ai/flux.2-pro": {
+      "name": "azure_ai/flux.2-pro",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure_ai/flux.2-flex": {
+      "name": "azure_ai/FLUX.2-flex",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 32000,
+      "mode": "image_generation"
+    },
+    "azure_ai/fw-deepseek-v3.2": {
+      "name": "azure_ai/FW-DeepSeek-V3.2",
+      "provider": "azure_ai",
+      "input_per_million": 0.62,
+      "output_per_million": 1.85,
+      "context_window": 163840,
+      "mode": "chat"
+    },
+    "azure_ai/fw-deepseek-v4-pro": {
+      "name": "azure_ai/FW-DeepSeek-V4-Pro",
+      "provider": "azure_ai",
+      "input_per_million": 1.925,
+      "output_per_million": 3.828,
+      "context_window": 384000,
+      "mode": "chat"
+    },
+    "azure_ai/fw-glm-5": {
+      "name": "azure_ai/FW-GLM-5",
+      "provider": "azure_ai",
+      "input_per_million": 1.1,
+      "output_per_million": 3.52,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/fw-glm-5.1": {
+      "name": "azure_ai/FW-GLM-5.1",
+      "provider": "azure_ai",
+      "input_per_million": 1.54,
+      "output_per_million": 4.84,
+      "context_window": 131072,
+      "mode": "chat"
+    },
+    "azure_ai/fw-glm-5.2": {
+      "name": "azure_ai/FW-GLM-5.2",
+      "provider": "azure_ai",
+      "input_per_million": 1.54,
+      "output_per_million": 4.84,
+      "context_window": 131072,
+      "mode": "chat"
+    },
+    "azure_ai/fw-glm-5.2-fast": {
+      "name": "azure_ai/FW-GLM-5.2-Fast",
+      "provider": "azure_ai",
+      "input_per_million": 2.31,
+      "output_per_million": 7.26,
+      "context_window": 131072,
+      "mode": "chat"
+    },
+    "azure_ai/fw-inkling": {
+      "name": "azure_ai/FW-Inkling",
+      "provider": "azure_ai",
+      "input_per_million": 1.1,
+      "output_per_million": 4.46,
+      "context_window": 1048576,
+      "mode": "chat"
+    },
+    "azure_ai/fw-kimi-k2.5": {
+      "name": "azure_ai/FW-Kimi-K2.5",
+      "provider": "azure_ai",
+      "input_per_million": 0.66,
+      "output_per_million": 3.3,
+      "context_window": 262144,
+      "mode": "chat"
+    },
+    "azure_ai/fw-kimi-k2.6": {
+      "name": "azure_ai/FW-Kimi-K2.6",
+      "provider": "azure_ai",
+      "input_per_million": 1.045,
+      "output_per_million": 4.4,
+      "context_window": 262144,
+      "mode": "chat"
+    },
+    "azure_ai/fw-kimi-k2.7-code": {
+      "name": "azure_ai/FW-Kimi-K2.7-Code",
+      "provider": "azure_ai",
+      "input_per_million": 1.05,
+      "output_per_million": 4.4,
+      "context_window": 262144,
+      "mode": "chat"
+    },
+    "azure_ai/fw-kimi-k3": {
+      "name": "azure_ai/FW-Kimi-K3",
+      "provider": "azure_ai",
+      "input_per_million": 3.0,
+      "output_per_million": 15.0,
+      "context_window": 131072,
+      "mode": "chat"
+    },
+    "azure_ai/fw-minimax-m2.5": {
+      "name": "azure_ai/FW-MiniMax-M2.5",
+      "provider": "azure_ai",
+      "input_per_million": 0.33,
+      "output_per_million": 1.32,
+      "context_window": 1000000,
+      "mode": "chat"
+    },
+    "azure_ai/fw-minimax-m3": {
+      "name": "azure_ai/FW-MiniMax-M3",
+      "provider": "azure_ai",
+      "input_per_million": 0.33,
+      "output_per_million": 1.32,
+      "context_window": 512000,
+      "mode": "chat"
+    },
+    "azure_ai/fw-nemotron-lightning-3.5-30b-a3b": {
+      "name": "azure_ai/FW-Nemotron-Lightning-3.5-30B-A3B",
+      "provider": "azure_ai",
+      "input_per_million": 0.06,
+      "output_per_million": 0.22,
+      "context_window": 262144,
+      "mode": "chat"
+    },
+    "azure_ai/fw-nemotron-3-ultra-nvfp4": {
+      "name": "azure_ai/FW-Nemotron-3-Ultra-NVFP4",
+      "provider": "azure_ai",
+      "input_per_million": 0.66,
+      "output_per_million": 2.64,
+      "context_window": 262144,
+      "mode": "chat"
+    },
+    "azure_ai/mai-image-2.5": {
+      "name": "azure_ai/MAI-Image-2.5",
+      "provider": "azure_ai",
+      "input_per_million": 5.0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure_ai/mai-image-2.5-flash": {
+      "name": "azure_ai/MAI-Image-2.5-Flash",
+      "provider": "azure_ai",
+      "input_per_million": 1.75,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure_ai/mai-image-2.5-pro": {
+      "name": "azure_ai/MAI-Image-2.5-Pro",
+      "provider": "azure_ai",
+      "input_per_million": 5.0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "image_generation"
+    },
+    "azure_ai/mai-thinking-1": {
+      "name": "azure_ai/MAI-Thinking-1",
+      "provider": "azure_ai",
+      "input_per_million": 2.0,
+      "output_per_million": 8.0,
+      "context_window": 64000,
+      "mode": "chat"
+    },
+    "azure_ai/llama-3.3-70b-instruct": {
+      "name": "azure_ai/Llama-3.3-70B-Instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.71,
+      "output_per_million": 0.71,
+      "context_window": 2048,
+      "mode": "chat"
+    },
+    "azure_ai/llama-4-maverick-17b-128e-instruct-fp8": {
+      "name": "azure_ai/Llama-4-Maverick-17B-128E-Instruct-FP8",
+      "provider": "azure_ai",
+      "input_per_million": 0.25,
+      "output_per_million": 1.0,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure_ai/llama-4-scout-17b-16e-instruct": {
+      "name": "azure_ai/Llama-4-Scout-17B-16E-Instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.2,
+      "output_per_million": 0.78,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure_ai/meta-llama-3-70b-instruct": {
+      "name": "azure_ai/Meta-Llama-3-70B-Instruct",
+      "provider": "azure_ai",
+      "input_per_million": 1.1,
+      "output_per_million": 0.37,
+      "context_window": 2048,
+      "mode": "chat"
+    },
+    "azure_ai/meta-llama-3.1-70b-instruct": {
+      "name": "azure_ai/Meta-Llama-3.1-70B-Instruct",
+      "provider": "azure_ai",
+      "input_per_million": 2.68,
+      "output_per_million": 3.54,
+      "context_window": 2048,
+      "mode": "chat"
+    },
+    "azure_ai/phi-3-medium-128k-instruct": {
+      "name": "azure_ai/Phi-3-medium-128k-instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.17,
+      "output_per_million": 0.68,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/phi-3-medium-4k-instruct": {
+      "name": "azure_ai/Phi-3-medium-4k-instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.17,
+      "output_per_million": 0.68,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/phi-3-mini-128k-instruct": {
+      "name": "azure_ai/Phi-3-mini-128k-instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.13,
+      "output_per_million": 0.52,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/phi-3-mini-4k-instruct": {
+      "name": "azure_ai/Phi-3-mini-4k-instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.13,
+      "output_per_million": 0.52,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/phi-3-small-128k-instruct": {
+      "name": "azure_ai/Phi-3-small-128k-instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.15,
+      "output_per_million": 0.6,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/phi-3-small-8k-instruct": {
+      "name": "azure_ai/Phi-3-small-8k-instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.15,
+      "output_per_million": 0.6,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/phi-3.5-moe-instruct": {
+      "name": "azure_ai/Phi-3.5-MoE-instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.16,
+      "output_per_million": 0.64,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/phi-3.5-mini-instruct": {
+      "name": "azure_ai/Phi-3.5-mini-instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.13,
+      "output_per_million": 0.52,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/phi-3.5-vision-instruct": {
+      "name": "azure_ai/Phi-3.5-vision-instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.13,
+      "output_per_million": 0.52,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/phi-4": {
+      "name": "azure_ai/Phi-4",
+      "provider": "azure_ai",
+      "input_per_million": 0.125,
+      "output_per_million": 0.5,
+      "context_window": 16384,
+      "mode": "chat"
+    },
+    "azure_ai/phi-4-mini-instruct": {
+      "name": "azure_ai/Phi-4-mini-instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.075,
+      "output_per_million": 0.3,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/phi-4-multimodal-instruct": {
+      "name": "azure_ai/Phi-4-multimodal-instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.08,
+      "output_per_million": 0.32,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/phi-4-mini-reasoning": {
+      "name": "azure_ai/Phi-4-mini-reasoning",
+      "provider": "azure_ai",
+      "input_per_million": 0.075,
+      "output_per_million": 0.3,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/phi-4-reasoning": {
+      "name": "azure_ai/Phi-4-reasoning",
+      "provider": "azure_ai",
+      "input_per_million": 0.125,
+      "output_per_million": 0.5,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/mistral-document-ai-2512": {
+      "name": "azure_ai/mistral-document-ai-2512",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "ocr"
+    },
+    "azure_ai/mistral-ocr-4-0": {
+      "name": "azure_ai/mistral-ocr-4-0",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "ocr"
+    },
+    "azure_ai/cohere-parse-v5": {
+      "name": "azure_ai/Cohere-parse-v5",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "ocr"
+    },
+    "azure_ai/cohere-command-a": {
+      "name": "azure_ai/cohere-command-a",
+      "provider": "azure_ai",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "context_window": 8182,
+      "mode": "chat"
+    },
+    "azure_ai/doc-intelligence/prebuilt-read": {
+      "name": "azure_ai/doc-intelligence/prebuilt-read",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "ocr"
+    },
+    "azure_ai/doc-intelligence/prebuilt-layout": {
+      "name": "azure_ai/doc-intelligence/prebuilt-layout",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "ocr"
+    },
+    "azure_ai/doc-intelligence/prebuilt-document": {
+      "name": "azure_ai/doc-intelligence/prebuilt-document",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "ocr"
+    },
+    "azure_ai/mai-ds-r1": {
+      "name": "azure_ai/MAI-DS-R1",
+      "provider": "azure_ai",
+      "input_per_million": 1.35,
+      "output_per_million": 5.4,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "azure_ai/cohere-rerank-v3-english": {
+      "name": "azure_ai/cohere-rerank-v3-english",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 4096,
+      "mode": "rerank"
+    },
+    "azure_ai/cohere-rerank-v3-multilingual": {
+      "name": "azure_ai/cohere-rerank-v3-multilingual",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 4096,
+      "mode": "rerank"
+    },
+    "azure_ai/cohere-rerank-v4.0-pro": {
+      "name": "azure_ai/cohere-rerank-v4.0-pro",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 32768,
+      "mode": "rerank"
+    },
+    "azure_ai/cohere-rerank-v4.0-fast": {
+      "name": "azure_ai/cohere-rerank-v4.0-fast",
+      "provider": "azure_ai",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 32768,
+      "mode": "rerank"
+    },
+    "azure_ai/deepseek-v3.2": {
+      "name": "azure_ai/deepseek-v3.2",
+      "provider": "azure_ai",
+      "input_per_million": 0.58,
+      "output_per_million": 1.68,
+      "context_window": 163840,
+      "mode": "chat"
+    },
+    "azure_ai/deepseek-v3.2-speciale": {
+      "name": "azure_ai/deepseek-v3.2-speciale",
+      "provider": "azure_ai",
+      "input_per_million": 0.58,
+      "output_per_million": 1.68,
+      "context_window": 163840,
+      "mode": "chat"
+    },
+    "azure_ai/deepseek-v3": {
+      "name": "azure_ai/deepseek-v3",
+      "provider": "azure_ai",
+      "input_per_million": 1.14,
+      "output_per_million": 4.56,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "azure_ai/deepseek-v4-pro": {
+      "name": "azure_ai/deepseek-v4-pro",
+      "provider": "azure_ai",
+      "input_per_million": 1.74,
+      "output_per_million": 3.48,
+      "context_window": 384000,
+      "mode": "chat"
+    },
+    "azure_ai/deepseek-v4-flash": {
+      "name": "azure_ai/deepseek-v4-flash",
+      "provider": "azure_ai",
+      "input_per_million": 0.19,
+      "output_per_million": 0.51,
+      "context_window": 384000,
+      "mode": "chat"
+    },
+    "azure_ai/deepseek-v4-flash-0731": {
+      "name": "azure_ai/DeepSeek-V4-Flash-0731",
+      "provider": "azure_ai",
+      "input_per_million": 0.44,
+      "output_per_million": 1.32,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/embed-v-4-0": {
+      "name": "azure_ai/embed-v-4-0",
+      "provider": "azure_ai",
+      "input_per_million": 0.12,
+      "output_per_million": 0,
+      "context_window": 128000,
+      "mode": "embedding"
+    },
+    "azure_ai/grok-4": {
+      "name": "azure_ai/grok-4",
+      "provider": "azure_ai",
+      "input_per_million": 3.0,
+      "output_per_million": 15.0,
+      "context_window": 131072,
+      "mode": "chat"
+    },
+    "azure_ai/grok-4.3": {
+      "name": "azure_ai/grok-4.3",
+      "provider": "azure_ai",
+      "input_per_million": 1.25,
+      "output_per_million": 2.5,
+      "context_window": 200000,
+      "mode": "chat"
+    },
+    "azure_ai/grok-4.6": {
+      "name": "azure_ai/grok-4.6",
+      "provider": "azure_ai",
+      "input_per_million": 2.0,
+      "output_per_million": 6.0,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "azure_ai/grok-4-20-reasoning": {
+      "name": "azure_ai/grok-4-20-reasoning",
+      "provider": "azure_ai",
+      "input_per_million": 1.25,
+      "output_per_million": 2.5,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "azure_ai/grok-4-20-non-reasoning": {
+      "name": "azure_ai/grok-4-20-non-reasoning",
+      "provider": "azure_ai",
+      "input_per_million": 1.25,
+      "output_per_million": 2.5,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "azure_ai/grok-4-1-fast-non-reasoning": {
+      "name": "azure_ai/grok-4-1-fast-non-reasoning",
+      "provider": "azure_ai",
+      "input_per_million": 0.2,
+      "output_per_million": 0.5,
+      "context_window": 131072,
+      "mode": "chat"
+    },
+    "azure_ai/grok-4-1-fast-reasoning": {
+      "name": "azure_ai/grok-4-1-fast-reasoning",
+      "provider": "azure_ai",
+      "input_per_million": 0.2,
+      "output_per_million": 0.5,
+      "context_window": 131072,
+      "mode": "chat"
+    },
+    "azure_ai/grok-code-fast-1": {
+      "name": "azure_ai/grok-code-fast-1",
+      "provider": "azure_ai",
+      "input_per_million": 0.2,
+      "output_per_million": 1.5,
+      "context_window": 131072,
+      "mode": "chat"
+    },
+    "azure_ai/jais-30b-chat": {
+      "name": "azure_ai/jais-30b-chat",
+      "provider": "azure_ai",
+      "input_per_million": 3200.0,
+      "output_per_million": 9710.0,
+      "context_window": 8192,
+      "mode": "chat"
+    },
+    "azure_ai/jamba-instruct": {
+      "name": "azure_ai/jamba-instruct",
+      "provider": "azure_ai",
+      "input_per_million": 0.5,
+      "output_per_million": 0.7,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/kimi-k2.5": {
+      "name": "azure_ai/kimi-k2.5",
+      "provider": "azure_ai",
+      "input_per_million": 0.6,
+      "output_per_million": 3.0,
+      "context_window": 262144,
+      "mode": "chat"
+    },
+    "azure_ai/kimi-k2.6": {
+      "name": "azure_ai/kimi-k2.6",
+      "provider": "azure_ai",
+      "input_per_million": 0.95,
+      "output_per_million": 4.0,
+      "context_window": 262144,
+      "mode": "chat"
+    },
+    "azure_ai/ministral-3b": {
+      "name": "azure_ai/ministral-3b",
+      "provider": "azure_ai",
+      "input_per_million": 0.04,
+      "output_per_million": 0.04,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/mistral-large": {
+      "name": "azure_ai/mistral-large",
+      "provider": "azure_ai",
+      "input_per_million": 4.0,
+      "output_per_million": 12.0,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "azure_ai/mistral-large-2407": {
+      "name": "azure_ai/mistral-large-2407",
+      "provider": "azure_ai",
+      "input_per_million": 2.0,
+      "output_per_million": 6.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/mistral-large-latest": {
+      "name": "azure_ai/mistral-large-latest",
+      "provider": "azure_ai",
+      "input_per_million": 2.0,
+      "output_per_million": 6.0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/mistral-large-3": {
+      "name": "azure_ai/mistral-large-3",
+      "provider": "azure_ai",
+      "input_per_million": 0.5,
+      "output_per_million": 1.5,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "azure_ai/mistral-medium-2505": {
+      "name": "azure_ai/mistral-medium-2505",
+      "provider": "azure_ai",
+      "input_per_million": 0.4,
+      "output_per_million": 2.0,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "azure_ai/mistral-nemo": {
+      "name": "azure_ai/mistral-nemo",
+      "provider": "azure_ai",
+      "input_per_million": 0.15,
+      "output_per_million": 0.15,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "azure_ai/mistral-small": {
+      "name": "azure_ai/mistral-small",
+      "provider": "azure_ai",
+      "input_per_million": 1.0,
+      "output_per_million": 3.0,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "azure_ai/mistral-small-2503": {
+      "name": "azure_ai/mistral-small-2503",
+      "provider": "azure_ai",
+      "input_per_million": 0.1,
+      "output_per_million": 0.3,
+      "context_window": 128000,
+      "mode": "chat"
+    },
+    "babbage-002": {
+      "name": "babbage-002",
+      "provider": "text-completion-openai",
+      "input_per_million": 0.4,
+      "output_per_million": 0.4,
+      "context_window": 4096,
+      "mode": "completion"
+    },
+    "bedrock/*/1-month-commitment/cohere.command-light-text-v14": {
+      "name": "bedrock/*/1-month-commitment/cohere.command-light-text-v14",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "bedrock/*/1-month-commitment/cohere.command-text-v14": {
+      "name": "bedrock/*/1-month-commitment/cohere.command-text-v14",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "bedrock/*/6-month-commitment/cohere.command-light-text-v14": {
+      "name": "bedrock/*/6-month-commitment/cohere.command-light-text-v14",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "bedrock/*/6-month-commitment/cohere.command-text-v14": {
+      "name": "bedrock/*/6-month-commitment/cohere.command-text-v14",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 4096,
+      "mode": "chat"
+    },
+    "bedrock/guardrails": {
+      "name": "bedrock/guardrails",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 0,
+      "mode": "guardrail"
+    },
+    "bedrock/ap-northeast-1/1-month-commitment/anthropic.claude-instant-v1": {
+      "name": "bedrock/ap-northeast-1/1-month-commitment/anthropic.claude-instant-v1",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "bedrock/ap-northeast-1/1-month-commitment/anthropic.claude-v1": {
+      "name": "bedrock/ap-northeast-1/1-month-commitment/anthropic.claude-v1",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "bedrock/ap-northeast-1/1-month-commitment/anthropic.claude-v2:1": {
+      "name": "bedrock/ap-northeast-1/1-month-commitment/anthropic.claude-v2:1",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "bedrock/ap-northeast-1/6-month-commitment/anthropic.claude-instant-v1": {
+      "name": "bedrock/ap-northeast-1/6-month-commitment/anthropic.claude-instant-v1",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "bedrock/ap-northeast-1/6-month-commitment/anthropic.claude-v1": {
+      "name": "bedrock/ap-northeast-1/6-month-commitment/anthropic.claude-v1",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "bedrock/ap-northeast-1/6-month-commitment/anthropic.claude-v2:1": {
+      "name": "bedrock/ap-northeast-1/6-month-commitment/anthropic.claude-v2:1",
+      "provider": "bedrock",
+      "input_per_million": 0,
+      "output_per_million": 0,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "bedrock/ap-northeast-1/anthropic.claude-instant-v1": {
+      "name": "bedrock/ap-northeast-1/anthropic.claude-instant-v1",
+      "provider": "bedrock",
+      "input_per_million": 2.23,
+      "output_per_million": 7.55,
+      "context_window": 8191,
+      "mode": "chat"
+    },
+    "bedrock/ap-northeast-1/anthropic.claude-v1": {
+      "name": "bedrock/ap-northeast-1/anthropic.claude-v1",
+      "provider": "bedrock",
+      "input_per_million": 8.0,
+      "output_per_million": 24.0,
+      "context_window": 8191,
+      "mode": "chat"
+    }
+  }
+}

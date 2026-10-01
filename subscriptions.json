@@ -1,0 +1,116 @@
+{
+  "currency": "USD",
+  "subscriptions": [
+    {
+      "id": "cursor-pro",
+      "name": "Cursor Pro (inc. Grok Bot)",
+      "provider": "Anysphere / Cursor",
+      "tier": "Pro",
+      "cost_monthly": 20.00,
+      "billing_cycle": "monthly",
+      "status": "active",
+      "category": "AI Code Editor & Multi-Model",
+      "models": [
+        "claude-opus-5.5",
+        "grok-4.7",
+        "gpt-6-sol-pro",
+        "cursor-tab"
+      ],
+      "features": [
+        "Claude Opus 5.5 (1M context) state-of-the-art coding and Composer diffs",
+        "Grok 4.7 / Grok Bot real-time web grounding bundled directly into Cursor",
+        "500 fast premium requests/mo (~$0.04/req) + unlimited slow requests",
+        "Unmetered Cursor Tab predictive multi-line autocompletion"
+      ],
+      "limits": "500 fast requests/mo pool, then unlimited slow requests (never locked out)",
+      "notes": "User accesses Grok 4.7 directly through this $20/mo Cursor subscription, saving $16-$30/mo on X."
+    },
+    {
+      "id": "chatgpt-plus",
+      "name": "ChatGPT Plus / Codex",
+      "provider": "OpenAI",
+      "tier": "Plus",
+      "cost_monthly": 20.00,
+      "billing_cycle": "monthly",
+      "status": "active",
+      "category": "Reasoning & STEM",
+      "models": [
+        "gpt-6-astra-pro",
+        "gpt-6-sol-pro",
+        "gpt-6-luna-pro",
+        "o3-mini"
+      ],
+      "features": [
+        "GPT-6 Astra Pro flagship deliberative reasoning (1.05M context)",
+        "GPT-6 Sol Pro fast reasoning workhorse",
+        "Canvas & Codex tools, Code Interpreter sandbox, Advanced Voice"
+      ],
+      "limits": "Time-window rolling cap (40-80 msgs / 3 hours) + weekly quotas on Astra Pro",
+      "notes": "Primary consumer/dev subscription for OpenAI flagship & reasoning models."
+    },
+    {
+      "id": "gemini-pro-antigravity",
+      "name": "Gemini Pro / Antigravity",
+      "provider": "Google",
+      "tier": "Google One AI Premium",
+      "cost_monthly": 19.99,
+      "billing_cycle": "monthly",
+      "status": "active",
+      "category": "Long-Context & Agentic",
+      "models": [
+        "gemini-3.8-flash",
+        "gemini-3.7-flash",
+        "gemini-3.1-pro-preview"
+      ],
+      "features": [
+        "Gemini 3.8 Flash with sub-100ms first token latency and 1.05M context",
+        "Antigravity Agentic IDE & CLI native workflow orchestration",
+        "2TB Google Cloud / One storage included ($9.99/mo value, net $10.00/mo for AI)"
+      ],
+      "limits": "Very high conversational and agent loop allowances (rarely throttles)",
+      "notes": "Essential for 1M+ token context analysis, whole codebases, and Antigravity workflow orchestration."
+    }
+  ],
+  "free_tiers": [
+    {
+      "id": "nvidia-nim",
+      "name": "NVIDIA NIM",
+      "provider": "NVIDIA",
+      "tier": "Developer Free Tier",
+      "cost_monthly": 0.00,
+      "status": "active",
+      "category": "GPU-Accelerated Cloud & Edge",
+      "models": [
+        "nemotron-3.5-lightning:free",
+        "nemotron-3-ultra-550b-a55b:free"
+      ],
+      "features": [
+        "1,000 free inference API credits on build.nvidia.com",
+        "Nemotron 3.5 Lightning hardware-optimized low latency",
+        "Nemotron 3 Ultra 550B dense reasoning with 1M context in free tier"
+      ],
+      "estimated_monthly_value": 25.00,
+      "notes": "Zero-cost enterprise GPU-accelerated inference."
+    },
+    {
+      "id": "nous-research",
+      "name": "NousResearch",
+      "provider": "Nous Research",
+      "tier": "Community / Portal (Free)",
+      "cost_monthly": 0.00,
+      "status": "active",
+      "category": "Open Reasoning & Alignment",
+      "models": [
+        "hermes-4-405b",
+        "hermes-3-llama-3.1-70b"
+      ],
+      "features": [
+        "Hermes 4 (405B) flagship open reasoning model",
+        "Uncensored instruction following and agent tool calling",
+        "Community portal & Discord bot access"
+      ],
+      "estimated_monthly_value": 15.00,
+      "notes": "Zero-cost frontier open reasoning suite."
+    }
+  ]
+}

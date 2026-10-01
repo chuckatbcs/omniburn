@@ -1,0 +1,21 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+.runtime/
+omniburn.log
+
+# Database files
+*.db
+*.db-*
+*.sqlite
+
+# Application logs
+*.log
+
+# OS metadata
+.DS_Store
+Thumbs.db

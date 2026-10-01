@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Subscription Task Yield & Burn Rate Tracker (Reconciled v7)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --background: #090d16;
+      --card: #111827;
+      --card-inner: #1a2234;
+      --border: #23304a;
+      --foreground: #f8fafc;
+      --muted-foreground: #94a3b8;
+      --primary: #3b82f6;
+      --accent: #10b981;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased min-h-screen p-4 md:p-8">
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border)] pb-6">
+      <div>
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-2xl font-bold tracking-tight text-[var(--foreground)]">AI Subscription Burn Tracker — Fully Reconciled v7</h1>
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Cross-Model Consensus</span>
+            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">Local telemetry only</span>
+            </div>
+            <p class="text-sm text-[var(--muted-foreground)]">Consensus audit between Antigravity and ChatGPT on subscription burn, success-adjusted resource costs, and dual-routing policies</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Download & Spend Bar -->
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="/AI_Subscription_Burn_Rate_Reconciled_v7_2026-09-23.xlsx" download class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Excel Workbook (v7)
+        </a>
+        <a href="/AI_Burn_Tracker_Reconciliation_v7_2026-09-23.zip" download class="px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 text-xs font-semibold flex items-center gap-1.5 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Reconciliation v7 Bundle
+        </a>
+        <div class="bg-[var(--card)] px-3 py-1.5 rounded-lg border border-[var(--border)] text-xs text-[var(--muted-foreground)]">
+          Total Sub Spend: <span class="font-bold text-white">$59.99/mo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dual Routing Policy Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="p-5 rounded-xl bg-[var(--card)] border border-emerald-500/30 space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-300">⚡</span>
+            <h3 class="font-bold text-emerald-300 text-sm">Objective 1: Quota-First Routing</h3>
+          </div>
+          <span class="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Maximize Tasks / Quota Point</span>
+        </div>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Best when quotas are tight and you need the absolute maximum completed tasks from your subscriptions.
+        </p>
+        <div class="space-y-1.5 text-xs text-slate-300 bg-slate-950/60 p-3 rounded-lg border border-slate-800 font-mono">
+          <div>• <strong>Gemini Tier 2 (Standard):</strong> <span class="text-emerald-400">Flash Medium</span> (20 tasks / 1% visible; 5.0x Pro yield)</div>
+          <div>• <strong>Gemini Tier 3 (Long-Horizon):</strong> <span class="text-emerald-400">Flash Medium</span> (5 tasks / 1% visible; 2.5x Pro yield)</div>
+          <div>• <strong>Claude Tier 2 (Standard):</strong> <span class="text-indigo-400">Sonnet 4.6</span> (3.33 tasks / 1% visible; 2.17x Opus yield)</div>
+          <div>• <strong>Claude Tier 3 (Long-Horizon):</strong> <span class="text-indigo-400">Sonnet 4.6</span> (2 tasks / 1% visible; 2.0x Opus yield)</div>
+        </div>
+      </div>
+
+      <div class="p-5 rounded-xl bg-[var(--card)] border border-blue-500/30 space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="p-1.5 rounded-lg bg-blue-500/20 text-blue-300">⏱️</span>
+            <h3 class="font-bold text-blue-300 text-sm">Objective 2: Time & Reliability-First Routing</h3>
+          </div>
+          <span class="text-[11px] font-semibold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">Minimize Retries & Latency</span>
+        </div>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Best when developer time and single-turn accuracy are priority #1 to avoid multi-turn debugging.
+        </p>
+        <div class="space-y-1.5 text-xs text-slate-300 bg-slate-950/60 p-3 rounded-lg border border-slate-800 font-mono">
+          <div>• <strong>Gemini Tier 2:</strong> <span class="text-emerald-400">Flash Medium</span> (70.9s / task; only 1.1 att/done vs Pro 113s)</div>
+          <div>• <strong>Gemini Tier 3:</strong> <span class="text-blue-400 font-bold">Pro High</span> (285s & 44k tokens vs Flash 448s & 104k tokens!)</div>
+          <div>• <strong>Claude Tier 2:</strong> <span class="text-indigo-400">Sonnet 4.6</span> (103.5s / task; fast and 90% first pass)</div>
+          <div>• <strong>Claude Tier 3:</strong> <span class="text-purple-400 font-bold">Opus 4.6 Thinking</span> (75% first pass point est; 300s / task)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pass 5/v7 Matched-Task Empirical Telemetry Section -->
+    <div class="bg-[var(--card)] border border-blue-500/30 rounded-xl p-6 shadow-sm space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Ground-Truth Matched Telemetry (Reconciliation v7)</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">No bundled run history</span>
+          </div>
+          <h2 class="text-lg font-bold text-white mt-1">Antigravity Quota Yield & Success-Adjusted Resource Costs</h2>
+          <p class="text-xs text-[var(--muted-foreground)]">First-pass denominator corrected to matched tasks (N=20). Resource metrics divide total attempts/tokens by completed tasks.</p>
+        </div>
+
+        <!-- Tier Switcher -->
+        <div class="flex items-center bg-slate-900 border border-slate-700 p-1 rounded-lg">
+          <button id="btnTier2" onclick="setTierView('tier2')" class="px-3 py-1 text-xs font-semibold rounded-md bg-blue-600 text-white transition">
+            Tier 2: Standard Engineering
+          </button>
+          <button id="btnTier3" onclick="setTierView('tier3')" class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition">
+            Tier 3: Long-Horizon Agent
+          </button>
+        </div>
+      </div>
+
+      <!-- Telemetry Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="border-b border-[var(--border)] text-[var(--muted-foreground)] uppercase text-[10px] tracking-wider">
+            <tr>
+              <th class="py-3 px-3">Model</th>
+              <th class="py-3 px-3">Quota Pool</th>
+              <th class="py-3 px-3 text-center">Attempts</th>
+              <th class="py-3 px-3 text-center">Correct First-Pass % (Wilson 95% CI)</th>
+              <th class="py-3 px-3 text-center">Att / Done</th>
+              <th class="py-3 px-3 text-right">Tasks / 1% Visible</th>
+              <th class="py-3 px-3 text-right">100-Point Extrapolation</th>
+              <th class="py-3 px-3 text-right">Tokens / Completed</th>
+              <th class="py-3 px-3 text-right">Latency / Completed</th>
+            </tr>
+          </thead>
+          <tbody id="telemetryBody" class="divide-y divide-slate-800">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Causal Analysis & Statistical Significance Callout Box -->
+      <div id="causalAnalysisBox" class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+        <!-- Dynamically rendered insights -->
+      </div>
+    </div>
+
+    <!-- Reconciled Multi-Subscription Master Matrix -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 shadow-sm space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-bold text-white">Consensus Multi-Subscription Harness Matrix</h2>
+          <p class="text-xs text-[var(--muted-foreground)]">Unified baseline combining Antigravity empirical pools, Cursor Pro dual pools, and ChatGPT local windows</p>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="border-b border-[var(--border)] text-[var(--muted-foreground)] uppercase text-[10px] tracking-wider">
+            <tr>
+              <th class="py-3 px-3">Subscription</th>
+              <th class="py-3 px-3">Harness & Quota Pool</th>
+              <th class="py-3 px-3">Top Workload Model</th>
+              <th class="py-3 px-3">Optimal Tier</th>
+              <th class="py-3 px-3 text-right">Reset Window</th>
+              <th class="py-3 px-3 text-right">Usable Tasks / Cycle</th>
+              <th class="py-3 px-3">Quota Model Architecture</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800">
+            <tr class="hover:bg-slate-800/40">
+              <td class="py-3 px-3 font-semibold text-white">Google AI Pro ($19.99)</td>
+              <td class="py-3 px-3 text-blue-400 font-mono">Pool A: Gemini</td>
+              <td class="py-3 px-3 font-bold text-emerald-400">Gemini 3.8 Flash Medium</td>
+              <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Tier 1 & 2 Standard</span></td>
+              <td class="py-3 px-3 text-right text-slate-300">5-hour rolling</td>
+              <td class="py-3 px-3 text-right font-bold text-emerald-400">20 / visible 1% (~2k extrap)</td>
+              <td class="py-3 px-3 text-slate-400">Independent pool. Whole % UI decrement. Highest raw volume workhorse.</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40">
+              <td class="py-3 px-3 font-semibold text-white">Google AI Pro ($19.99)</td>
+              <td class="py-3 px-3 text-blue-400 font-mono">Pool A: Gemini</td>
+              <td class="py-3 px-3 font-bold text-blue-300">Gemini 3.1 Pro High</td>
+              <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">Tier 3 Long-Horizon</span></td>
+              <td class="py-3 px-3 text-right text-slate-300">5-hour rolling</td>
+              <td class="py-3 px-3 text-right font-bold text-blue-300">2 / visible 1% (~200 extrap)</td>
+              <td class="py-3 px-3 text-slate-400">Saves 57% tokens & 36% time on Tier 3 vs Flash; higher 1st-pass point est.</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40">
+              <td class="py-3 px-3 font-semibold text-white">Google AI Pro ($19.99)</td>
+              <td class="py-3 px-3 text-purple-400 font-mono">Pool B: Claude/GPT</td>
+              <td class="py-3 px-3 font-bold text-indigo-300">Claude Sonnet 4.6</td>
+              <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300">Tier 2 Standard</span></td>
+              <td class="py-3 px-3 text-right text-slate-300">5-hour rolling</td>
+              <td class="py-3 px-3 text-right font-bold text-indigo-300">3.33 / visible 1% (~333 extrap)</td>
+              <td class="py-3 px-3 text-slate-400">Independent 5h pool from Gemini. 2.17x quota yield vs Opus.</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40">
+              <td class="py-3 px-3 font-semibold text-white">Google AI Pro ($19.99)</td>
+              <td class="py-3 px-3 text-purple-400 font-mono">Pool B: Claude/GPT</td>
+              <td class="py-3 px-3 font-bold text-purple-300">Claude Opus 4.6 Thinking</td>
+              <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">Tier 3 Long-Horizon</span></td>
+              <td class="py-3 px-3 text-right text-slate-300">5-hour rolling</td>
+              <td class="py-3 px-3 text-right font-bold text-purple-300">1.0 / visible 1% (~100 extrap)</td>
+              <td class="py-3 px-3 text-slate-400">75% 1st-pass point est; slightly faster success-adjusted time than Sonnet.</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40">
+              <td class="py-3 px-3 font-semibold text-white">Cursor Pro ($20.00)</td>
+              <td class="py-3 px-3 text-amber-400 font-mono">Cursor Models Pool</td>
+              <td class="py-3 px-3 font-bold text-amber-300">Composer 2.5 (Normal)</td>
+              <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300">Tier 2 & 3 Coding</span></td>
+              <td class="py-3 px-3 text-right text-slate-300">Monthly billing</td>
+              <td class="py-3 px-3 text-right font-bold text-amber-300">~300–450 tasks</td>
+              <td class="py-3 px-3 text-slate-400">Avoid Composer "Fast" mode (~6x luxury multiplier for identical model).</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40">
+              <td class="py-3 px-3 font-semibold text-white">Cursor Pro ($20.00)</td>
+              <td class="py-3 px-3 text-amber-400 font-mono">Other Models Pool</td>
+              <td class="py-3 px-3 font-bold text-pink-300">Claude Opus 5.5</td>
+              <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-pink-500/20 text-pink-300">Tier 3 & 4 Complex</span></td>
+              <td class="py-3 px-3 text-right text-slate-300">Monthly billing</td>
+              <td class="py-3 px-3 text-right font-bold text-pink-300">~120 tasks</td>
+              <td class="py-3 px-3 text-slate-400">1.88x–1.99x burn of Sonnet 5; highest value on greenfield planning.</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40">
+              <td class="py-3 px-3 font-semibold text-white">ChatGPT Plus ($20.00)</td>
+              <td class="py-3 px-3 text-emerald-400 font-mono">OpenAI Work / Codex</td>
+              <td class="py-3 px-3 font-bold text-emerald-300">GPT-5.6 Sol / Terra</td>
+              <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Tier 2 General</span></td>
+              <td class="py-3 px-3 text-right text-slate-300">5-hour rolling</td>
+              <td class="py-3 px-3 text-right font-bold text-emerald-300">~50–100 msgs</td>
+              <td class="py-3 px-3 text-slate-400">Local 5h capacity ranges: Sol=10–100, Terra=25–200, Astra=5–45.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const TELEMETRY_DATA_V7 = {
+      tier2: [
+        {
+          model: 'Gemini 3.8 Flash Medium',
+          pool: 'Pool A (Gemini)',
+          attempts: 22,
+          completed: 20,
+          firstPassTasks: 18,
+          firstPassRate: '90.0%',
+          ci: '69.9%–97.2%',
+          attemptsPerDone: '1.10',
+          tasksPer1Pct: '20.0',
+          tasksPer100Pct: '2,000.0',
+          tokensPerCompleted: '7,683',
+          latencyPerCompleted: '70.9s',
+          badge: 'bg-emerald-500/20 text-emerald-300'
+        },
+        {
+          model: 'Gemini 3.1 Pro High',
+          pool: 'Pool A (Gemini)',
+          attempts: 21,
+          completed: 20,
+          firstPassTasks: 19,
+          firstPassRate: '95.0%',
+          ci: '76.4%–99.1%',
+          attemptsPerDone: '1.05',
+          tasksPer1Pct: '4.0',
+          tasksPer100Pct: '400.0',
+          tokensPerCompleted: '10,982',
+          latencyPerCompleted: '113.2s',
+          badge: 'bg-blue-500/20 text-blue-300'
+        },
+        {
+          model: 'Claude Sonnet 4.6',
+          pool: 'Pool B (Claude/GPT)',
+          attempts: 22,
+          completed: 20,
+          firstPassTasks: 18,
+          firstPassRate: '90.0%',
+          ci: '69.9%–97.2%',
+          attemptsPerDone: '1.10',
+          tasksPer1Pct: '3.33',
+          tasksPer100Pct: '333.3',
+          tokensPerCompleted: '18,106',
+          latencyPerCompleted: '103.5s',
+          badge: 'bg-indigo-500/20 text-indigo-300'
+        },
+        {
+          model: 'Claude Opus 4.6 Thinking',
+          pool: 'Pool B (Claude/GPT)',
+          attempts: 21,
+          completed: 20,
+          firstPassTasks: 19,
+          firstPassRate: '95.0%',
+          ci: '76.4%–99.1%',
+          attemptsPerDone: '1.05',
+          tasksPer1Pct: '1.54',
+          tasksPer100Pct: '153.8',
+          tokensPerCompleted: '19,269',
+          latencyPerCompleted: '127.0s',
+          badge: 'bg-purple-500/20 text-purple-300'
+        }
+      ],
+      tier3: [
+        {
+          model: 'Gemini 3.8 Flash Medium',
+          pool: 'Pool A (Gemini)',
+          attempts: 29,
+          completed: 20,
+          firstPassTasks: 12,
+          firstPassRate: '60.0%',
+          ci: '38.7%–78.1%',
+          attemptsPerDone: '1.45',
+          tasksPer1Pct: '5.0',
+          tasksPer100Pct: '500.0',
+          tokensPerCompleted: '104,206',
+          latencyPerCompleted: '448.4s',
+          badge: 'bg-amber-500/20 text-amber-300'
+        },
+        {
+          model: 'Gemini 3.1 Pro High',
+          pool: 'Pool A (Gemini)',
+          attempts: 25,
+          completed: 20,
+          firstPassTasks: 15,
+          firstPassRate: '75.0%',
+          ci: '53.1%–88.8%',
+          attemptsPerDone: '1.25',
+          tasksPer1Pct: '2.0',
+          tasksPer100Pct: '200.0',
+          tokensPerCompleted: '44,284',
+          latencyPerCompleted: '285.0s',
+          badge: 'bg-blue-500/20 text-blue-300'
+        },
+        {
+          model: 'Claude Sonnet 4.6',
+          pool: 'Pool B (Claude/GPT)',
+          attempts: 29,
+          completed: 20,
+          firstPassTasks: 11,
+          firstPassRate: '55.0%',
+          ci: '34.2%–74.2%',
+          attemptsPerDone: '1.45',
+          tasksPer1Pct: '2.0',
+          tasksPer100Pct: '200.0',
+          tokensPerCompleted: '45,593',
+          latencyPerCompleted: '315.2s',
+          badge: 'bg-rose-500/20 text-rose-300'
+        },
+        {
+          model: 'Claude Opus 4.6 Thinking',
+          pool: 'Pool B (Claude/GPT)',
+          attempts: 25,
+          completed: 20,
+          firstPassTasks: 15,
+          firstPassRate: '75.0%',
+          ci: '53.1%–88.8%',
+          attemptsPerDone: '1.25',
+          tasksPer1Pct: '1.0',
+          tasksPer100Pct: '100.0',
+          tokensPerCompleted: '44,113',
+          latencyPerCompleted: '300.2s',
+          badge: 'bg-purple-500/20 text-purple-300'
+        }
+      ]
+    };
+
+    let currentTier = 'tier2';
+
+    function setTierView(tier) {
+      currentTier = tier;
+      document.getElementById('btnTier2').className = tier === 'tier2' 
+        ? 'px-3 py-1 text-xs font-semibold rounded-md bg-blue-600 text-white transition'
+        : 'px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition';
+      document.getElementById('btnTier3').className = tier === 'tier3'
+        ? 'px-3 py-1 text-xs font-semibold rounded-md bg-blue-600 text-white transition'
+        : 'px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition';
+
+      renderTelemetryTable();
+    }
+
+    function renderTelemetryTable() {
+      const rows = TELEMETRY_DATA_V7[currentTier];
+      const tbody = document.getElementById('telemetryBody');
+      tbody.innerHTML = rows.map(r => `
+        <tr class="hover:bg-slate-800/40">
+          <td class="py-3 px-3 font-bold text-white flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full ${r.badge.includes('emerald') ? 'bg-emerald-400' : r.badge.includes('blue') ? 'bg-blue-400' : r.badge.includes('indigo') ? 'bg-indigo-400' : r.badge.includes('purple') ? 'bg-purple-400' : r.badge.includes('rose') ? 'bg-rose-400' : 'bg-amber-400'}"></span>
+            ${r.model}
+          </td>
+          <td class="py-3 px-3 text-slate-300 font-mono text-[11px]">${r.pool}</td>
+          <td class="py-3 px-3 text-center text-slate-300">${r.attempts}</td>
+          <td class="py-3 px-3 text-center">
+            <span class="font-bold text-white">${r.firstPassRate}</span>
+            <span class="text-[10px] text-slate-400 ml-1">(${r.ci})</span>
+          </td>
+          <td class="py-3 px-3 text-center font-mono text-slate-300">${r.attemptsPerDone}</td>
+          <td class="py-3 px-3 text-right font-mono font-semibold text-white">${r.tasksPer1Pct}</td>
+          <td class="py-3 px-3 text-right font-bold text-emerald-400 font-mono">${r.tasksPer100Pct}</td>
+          <td class="py-3 px-3 text-right text-slate-300 font-mono">${r.tokensPerCompleted}</td>
+          <td class="py-3 px-3 text-right text-slate-400 font-mono">${r.latencyPerCompleted}</td>
+        </tr>
+      `).join('');
+
+      const box = document.getElementById('causalAnalysisBox');
+      if (currentTier === 'tier2') {
+        box.innerHTML = `
+          <div class="text-xs font-bold text-blue-300 flex items-center gap-1.5">
+            <span>🔬</span> Statistical Findings for Tier 2: Standard Engineering (N=20 Matched Tasks)
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] text-slate-300">
+            <div class="p-3 bg-slate-950/60 rounded-lg border border-slate-800">
+              <div class="font-bold text-white mb-1">Pool A: Flash Medium vs. Pro High</div>
+              <ul class="list-disc list-inside space-y-1 text-slate-400">
+                <li><strong class="text-emerald-400">First-pass accuracy:</strong> Flash 90% (18/20) vs Pro 95% (19/20). Paired McNemar p = 1.000 (not statistically different).</li>
+                <li><strong class="text-white">Quota yield point estimate:</strong> Flash achieves 20 tasks / visible 1% vs Pro's 4 tasks / 1% (5.0x advantage).</li>
+                <li><strong class="text-white">Success-adjusted speed:</strong> Flash is 1.60x faster (70.9s vs 113.2s per completed task).</li>
+                <li><span class="text-emerald-300 font-semibold">Consensus Verdict:</span> Flash Medium is the unambiguous quota & speed default for Tier 2.</li>
+              </ul>
+            </div>
+            <div class="p-3 bg-slate-950/60 rounded-lg border border-slate-800">
+              <div class="font-bold text-white mb-1">Pool B: Sonnet 4.6 vs. Opus 4.6 Thinking</div>
+              <ul class="list-disc list-inside space-y-1 text-slate-400">
+                <li><strong class="text-indigo-400">First-pass accuracy:</strong> Sonnet 90% (18/20) vs Opus 95% (19/20). Paired McNemar p = 1.000.</li>
+                <li><strong class="text-white">Quota yield point estimate:</strong> Sonnet delivers 3.33 tasks / 1% vs Opus 1.54 tasks / 1% (~2.17x advantage).</li>
+                <li><strong class="text-white">Success-adjusted speed:</strong> Sonnet completes in 103.5s vs Opus 127.0s per completed task.</li>
+                <li><span class="text-indigo-300 font-semibold">Consensus Verdict:</span> Sonnet 4.6 is the cost-effective workhorse for standard coding.</li>
+              </ul>
+            </div>
+          </div>
+        `;
+      } else {
+        box.innerHTML = `
+          <div class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+            <span>⚠️</span> Statistical Findings for Tier 3: Long-Horizon Agent Coding (N=20 Matched Tasks)
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] text-slate-300">
+            <div class="p-3 bg-slate-950/60 rounded-lg border border-slate-800">
+              <div class="font-bold text-white mb-1">Pool A: The Flash Crossover Tradeoff</div>
+              <ul class="list-disc list-inside space-y-1 text-slate-400">
+                <li><strong class="text-amber-400">First-pass point estimates:</strong> Flash 60% (12/20) vs Pro 75% (15/20). Paired McNemar p = 0.581 (underpowered at N=20 to prove difference).</li>
+                <li><strong class="text-rose-400">Success-adjusted resource penalty:</strong> Retries inflate Flash to <strong>104.2k tokens</strong> and <strong>448.4s</strong> per completed task vs Pro's <strong>44.3k tokens</strong> and <strong>285.0s</strong> (Pro saves 57% tokens & 36% time!).</li>
+                <li><strong class="text-emerald-400">Quota point estimate:</strong> Flash still preserves 2.5x more visible quota (5 vs 2 tasks / 1%).</li>
+                <li><span class="text-amber-300 font-semibold">Dual Route:</span> Quota-first = Flash; Time/Reliability-first = Pro High.</li>
+              </ul>
+            </div>
+            <div class="p-3 bg-slate-950/60 rounded-lg border border-slate-800">
+              <div class="font-bold text-white mb-1">Pool B: Sonnet 4.6 vs. Opus 4.6 Thinking</div>
+              <ul class="list-disc list-inside space-y-1 text-slate-400">
+                <li><strong class="text-rose-400">First-pass point estimates:</strong> Sonnet 55% (11/20) vs Opus 75% (15/20). Paired McNemar p = 0.424.</li>
+                <li><strong class="text-purple-300">Success-adjusted parity:</strong> Total time (315s vs 300s) and tokens (45.6k vs 44.1k) are nearly identical.</li>
+                <li><strong class="text-white">Quota point estimate:</strong> Sonnet delivers 2.0x higher visible quota yield (2 vs 1 task / 1%).</li>
+                <li><span class="text-purple-300 font-semibold">Dual Route:</span> Quota-first = Sonnet 4.6; Single-turn confidence-first = Opus 4.6 Thinking.</li>
+              </ul>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    renderTelemetryTable();
+  </script>
+</body>
+</html>

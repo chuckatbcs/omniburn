@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniBurn — AI Subscription Burn & Yield Engine</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --background: #090d16;
+      --card: #111827;
+      --card-inner: #1a2234;
+      --border: #23304a;
+      --foreground: #f8fafc;
+      --muted-foreground: #94a3b8;
+      --primary: #3b82f6;
+      --accent: #10b981;
+    }
+    th.sortable:hover {
+      color: #f8fafc;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased min-h-screen p-4 md:p-8">
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Top Navigation & Brand Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border)] pb-6">
+      <div>
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-2xl font-bold tracking-tight text-[var(--foreground)]">OmniBurn</h1>
+              <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 flex items-center gap-1 shadow-sm">
+                <span>⚡</span> Built by AGY
+              </span>
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Auto-Updating</span>
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">Cost & API Sorting</span>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)]">AI subscription burn tracker, model/provider toggle engine, and dual-routing yield optimizer</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action & Spend Bar -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button onclick="triggerSync()" id="syncBtn" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow transition">
+          <svg id="syncIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Sync Live Models
+        </button>
+        <a href="/download/AI_Subscription_Burn_Rate_Reconciled_v7_2026-09-23.xlsx" download class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Excel v7
+        </a>
+        <div class="bg-[var(--card)] px-3 py-1.5 rounded-lg border border-[var(--border)] text-xs text-[var(--muted-foreground)]">
+          Active Monthly Spend: <span id="spendDisplay" class="font-bold text-white">$59.99/mo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Subscriptions & Provider Toggles Grid -->
+    <div class="space-y-2">
+      <div class="flex items-center justify-between text-xs text-slate-400">
+        <span class="font-bold text-slate-300 uppercase tracking-wider text-[11px]">Subscription & Provider Toggles</span>
+        <span>Toggle a provider to immediately include/exclude all its models from recommendations</span>
+      </div>
+      <div id="subsGrid" class="grid grid-cols-1 md:grid-cols-5 gap-3">
+        <!-- Populated dynamically from /api/status -->
+      </div>
+    </div>
+
+    <!-- Interactive Dual-Routing Recommender Widget -->
+    <div class="bg-[var(--card)] border border-blue-500/30 rounded-xl p-6 shadow-sm space-y-5">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Dynamic Router</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Refactors Live on Toggles</span>
+          </div>
+          <h2 class="text-lg font-bold text-white mt-1">Smart Model & Quota Routing Recommender</h2>
+          <p class="text-xs text-[var(--muted-foreground)]">Automatically refactors recommendation based on active models and chosen strategic priority</p>
+        </div>
+
+        <!-- Recommender Controls -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Tier Selector -->
+          <div class="flex items-center bg-slate-900 border border-slate-700 p-1 rounded-lg">
+            <button onclick="setTier(1)" id="tierBtn1" class="px-2.5 py-1 text-xs font-medium rounded text-slate-400 hover:text-white transition">Tier 1: Micro</button>
+            <button onclick="setTier(2)" id="tierBtn2" class="px-2.5 py-1 text-xs font-semibold rounded bg-blue-600 text-white transition">Tier 2: Standard</button>
+            <button onclick="setTier(3)" id="tierBtn3" class="px-2.5 py-1 text-xs font-medium rounded text-slate-400 hover:text-white transition">Tier 3: Long-Horizon</button>
+            <button onclick="setTier(4)" id="tierBtn4" class="px-2.5 py-1 text-xs font-medium rounded text-slate-400 hover:text-white transition">Tier 4: Massive</button>
+          </div>
+
+          <!-- Strategy Toggle -->
+          <div class="flex items-center bg-slate-900 border border-slate-700 p-1 rounded-lg">
+            <button onclick="setStrategy('quota_first')" id="stratQuota" class="px-3 py-1 text-xs font-semibold rounded bg-emerald-600 text-white transition">
+              ⚡ Quota-First
+            </button>
+            <button onclick="setStrategy('time_reliability_first')" id="stratTime" class="px-3 py-1 text-xs font-semibold rounded text-slate-400 hover:text-white transition">
+              ⏱️ Time & Reliability
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smart Auto-Classifier Bar (RouteLLM & Predictive Intent Routing) -->
+      <div class="space-y-1.5">
+        <div class="bg-slate-900/90 border border-slate-700/80 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-3">
+          <div class="flex items-center gap-1.5 text-xs font-bold text-blue-400 shrink-0">
+            <span>⚡</span>
+            <span>Auto-Route:</span>
+          </div>
+          <div class="flex-1 w-full relative">
+            <input type="text" id="autoRouteInput" placeholder="Describe task or paste git intent (e.g. 'Refactor multi-file database layer' or 'Rearchitect backend to microservices')..." 
+                   class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                   onkeydown="if(event.key==='Enter') runAutoRoute()">
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="runAutoRoute()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+              <span>Analyze & Route</span>
+            </button>
+            <button onclick="runWorkspaceScan()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 rounded-lg text-xs font-medium transition flex items-center gap-1.5">
+              <span>Scan Git Workspace</span>
+            </button>
+            <button onclick="runWebBenchmark()" id="benchRunBtn" class="px-3 py-1.5 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/40 text-purple-300 rounded-lg text-xs font-semibold transition flex items-center gap-1.5">
+              <span id="benchSpinner" class="hidden animate-spin">⏳</span>
+              <span>🧪 Run Golden Benchmarks</span>
+            </button>
+          </div>
+        </div>
+        <!-- Empty prompt prompt/alert -->
+        <div id="emptyPromptWarning" class="hidden text-[11px] text-amber-300 font-medium px-3 py-1.5 bg-amber-950/40 border border-amber-500/40 rounded-lg flex items-center justify-between">
+          <span>⚠️ Please type a task description in the box first (e.g. <em>"Refactor multi-file database service"</em> or <em>"Rearchitect to microservices"</em>) or click <strong>Scan Git Workspace</strong>.</span>
+          <button onclick="document.getElementById('emptyPromptWarning').classList.add('hidden')" class="text-amber-400 hover:text-white text-xs ml-2">✕</button>
+        </div>
+      </div>
+
+      <!-- Classification Banner (hidden until routed) -->
+      <div id="classificationBanner" class="hidden bg-blue-950/40 border border-blue-500/30 rounded-lg p-3 text-xs text-slate-300 flex flex-col gap-2">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span id="classTierBadge" class="px-2 py-0.5 rounded font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40">Tier 4</span>
+            <span id="classIntentBadge" class="text-white font-medium">repo_scale_architecture</span>
+            <span id="classConfBadge" class="text-slate-400">(96% confidence)</span>
+            <button id="revertTierBtn" onclick="revertToPreviousTier()" class="hidden px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition">
+              ↩️ Revert Tier
+            </button>
+          </div>
+          <div class="flex items-center gap-3 text-slate-400 flex-wrap">
+            <span id="classTokenEstimate" class="font-mono text-emerald-400 font-semibold">~200,000 tokens</span>
+            <span id="classSignalsText" class="text-slate-300">Detected: rearchitect, multi-agent</span>
+            <button onclick="toggleDiagDrawer()" class="text-blue-400 hover:text-blue-300 underline font-mono text-[11px] ml-2">
+              <span id="diagToggleText">View Diagnostics & CLI</span>
+            </button>
+          </div>
+        </div>
+        <!-- Expandable Diagnostic Drawer -->
+        <div id="diagDrawer" class="hidden mt-2 pt-2 border-t border-slate-700/60 font-mono text-[11px] text-slate-400 space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500 font-semibold">CLI Command:</span>
+            <code id="cliCommandBox" class="bg-black/50 px-2 py-0.5 rounded text-emerald-300 border border-slate-800">ai-burn route ""</code>
+          </div>
+          <div id="diagDetailsBox" class="text-[10px] text-slate-400"></div>
+        </div>
+      </div>
+
+      <!-- Benchmark Results Panel (hidden until run) -->
+      <div id="benchmarksPanel" class="hidden bg-slate-900/90 border border-purple-500/40 rounded-xl p-4 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Empirical Hardware Verification</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">Local Golden Suites</span>
+          </div>
+          <button onclick="document.getElementById('benchmarksPanel').classList.add('hidden')" class="text-slate-400 hover:text-white text-xs">✕ Close</button>
+        </div>
+        <div id="benchmarksGrid" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <!-- Populated dynamically via runWebBenchmark() -->
+        </div>
+      </div>
+
+      <!-- Recommendation Result Box -->
+      <div id="recResultBox" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Rendered via updateRecommendation() -->
+      </div>
+    </div>
+
+    <!-- Live Model Task Yield Matrix with Individual Toggles & Multi-Column Sorting -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 shadow-sm space-y-4">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-white">Tracked Models & Yield Catalog</h2>
+          <p class="text-xs text-[var(--muted-foreground)]">Sort by subscription cost per task or raw API benchmark cost for other harnesses</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <!-- Quick Sort Dropdown -->
+          <div class="flex items-center gap-1.5 text-xs text-slate-400">
+            <span>Sort By:</span>
+            <select id="sortDropdown" onchange="handleSortDropdown()" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-blue-500">
+              <option value="sub_cost_asc">Sub Cost / Task (Lowest First)</option>
+              <option value="sub_cost_desc">Sub Cost / Task (Highest First)</option>
+              <option value="api_cost_asc">Raw API Cost / Task (Lowest First)</option>
+              <option value="api_cost_desc">Raw API Cost / Task (Highest First)</option>
+              <option value="tasks_month_desc">Tasks / Month (Highest First)</option>
+              <option value="tasks_pool_desc">Tasks / Pool Cycle (Highest First)</option>
+              <option value="latency_asc">Latency (Fastest First)</option>
+              <option value="name_asc">Model Name (A-Z)</option>
+              <option value="default_asc">Default (Quota-First Score)</option>
+            </select>
+          </div>
+
+          <input type="text" id="modelSearch" oninput="renderModelsTable()" placeholder="Search model or provider..." class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1 text-xs text-white placeholder-slate-500 w-40 focus:outline-none focus:border-blue-500">
+          
+          <select id="statusFilter" onchange="renderModelsTable()" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white">
+            <option value="all">All Status</option>
+            <option value="active">Active Only</option>
+            <option value="disabled">Disabled Only</option>
+          </select>
+
+          <select id="providerFilter" onchange="renderModelsTable()" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white font-medium">
+            <option value="all">All Providers</option>
+            <option value="Google">Google</option>
+            <option value="OpenAI">OpenAI</option>
+            <option value="Anthropic">Anthropic</option>
+            <option value="xAI">xAI</option>
+            <option value="Cursor">Cursor</option>
+            <option value="NVIDIA">NVIDIA</option>
+            <option value="NousResearch">NousResearch</option>
+            <option value="Open Source">Open Source</option>
+          </select>
+
+          <select id="harnessFilter" onchange="renderModelsTable()" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white">
+            <option value="all">All Harnesses</option>
+            <option value="Antigravity">Antigravity</option>
+            <option value="Cursor">Cursor IDE</option>
+            <option value="ChatGPT">ChatGPT / Codex</option>
+            <option value="NVIDIA">NVIDIA NIM / Free</option>
+            <option value="Nous">Nous Portal / Free</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="border-b border-[var(--border)] text-[var(--muted-foreground)] uppercase text-[10px] tracking-wider select-none">
+            <tr>
+              <th class="py-3 px-3">Status</th>
+              <th onclick="toggleSort('name')" class="py-3 px-3 sortable">
+                <span class="flex items-center gap-1">Model Name <span id="sortIcon_name"></span></span>
+              </th>
+              <th class="py-3 px-3">Provider</th>
+              <th class="py-3 px-3">Harness & Pool</th>
+              <th class="py-3 px-3">Reasoning</th>
+              <th onclick="toggleSort('tasks_pool')" class="py-3 px-3 text-right sortable">
+                <span class="flex items-center justify-end gap-1">Tasks / Pool <span id="sortIcon_tasks_pool"></span></span>
+              </th>
+              <th onclick="toggleSort('tasks_month')" class="py-3 px-3 text-right sortable">
+                <span class="flex items-center justify-end gap-1">Tasks / Mo <span id="sortIcon_tasks_month"></span></span>
+              </th>
+              <th onclick="toggleSort('sub_cost')" class="py-3 px-3 text-right sortable text-emerald-400 font-bold">
+                <span class="flex items-center justify-end gap-1">Sub Cost / Task <span id="sortIcon_sub_cost"></span></span>
+              </th>
+              <th onclick="toggleSort('api_cost')" class="py-3 px-3 text-right sortable text-blue-300 font-bold">
+                <span class="flex items-center justify-end gap-1">Raw API Cost <span id="sortIcon_api_cost"></span></span>
+              </th>
+              <th onclick="toggleSort('latency')" class="py-3 px-3 text-right sortable">
+                <span class="flex items-center justify-end gap-1">Latency <span id="sortIcon_latency"></span></span>
+              </th>
+              <th class="py-3 px-3 text-center">Toggle Model</th>
+            </tr>
+          </thead>
+          <tbody id="modelsTableBody" class="divide-y divide-slate-800">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Model Changelog Feed -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-base">📡</span>
+          <h3 class="text-sm font-bold text-white">Live State Changelog & Toggle Radar</h3>
+        </div>
+        <span class="text-[10px] text-slate-400">Audit Trail</span>
+      </div>
+      <div id="changelogFeed" class="space-y-2 text-xs max-h-52 overflow-y-auto pr-1">
+        <!-- Populated from /api/changelog -->
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentTier = 2;
+    let currentStrategy = 'quota_first';
+    let allModels = [];
+    let currentSortKey = 'sub_cost';
+    let currentSortDir = 'asc';
+
+    async function loadStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        document.getElementById('spendDisplay').innerText = `$${data.monthly_spend.toFixed(2)}/mo`;
+
+        // Render Subscriptions Grid with Toggles
+        const subsGrid = document.getElementById('subsGrid');
+        subsGrid.innerHTML = data.subscriptions.map(s => {
+          const isActive = s.status === 'active';
+          return `
+            <div class="p-3.5 rounded-xl border transition ${isActive ? 'bg-[var(--card)] border-slate-800' : 'bg-slate-950/40 border-slate-900 opacity-60'} space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-xs ${isActive ? 'text-white' : 'text-slate-500'} truncate">${s.name}</span>
+                <button onclick="toggleProvider('${s.id}', ${!isActive})" class="px-2 py-0.5 rounded text-[10px] font-bold transition ${isActive ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-rose-500/20 hover:text-rose-400 hover:border-rose-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-emerald-500/20 hover:text-emerald-400'}">
+                  ${isActive ? 'Active' : 'Disabled'}
+                </button>
+              </div>
+              <div class="flex items-center justify-between text-[11px] text-slate-400">
+                <span>${s.provider}</span>
+                <span class="font-mono ${isActive ? 'text-emerald-400' : 'text-slate-500'}">$${s.monthly_cost.toFixed(2)}/mo</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Render Changelog
+        const clFeed = document.getElementById('changelogFeed');
+        clFeed.innerHTML = data.recent_changelog.map(c => `
+          <div class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-start justify-between gap-2">
+            <div>
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-bold ${c.event_type.includes('MODEL') ? 'bg-blue-500/20 text-blue-300' : c.event_type.includes('PROVIDER') ? 'bg-purple-500/20 text-purple-300' : 'bg-amber-500/20 text-amber-300'}">${c.event_type}</span>
+              <span class="text-slate-300 font-medium ml-1">${c.details}</span>
+            </div>
+            <span class="text-[9px] text-slate-500 whitespace-nowrap">${new Date(c.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}</span>
+          </div>
+        `).join('');
+
+      } catch (e) {
+        console.error('Failed to load status:', e);
+      }
+    }
+
+    async function toggleProvider(subId, enable) {
+      try {
+        await fetch('/api/toggle-provider', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({sub_id: subId, is_active: enable})
+        });
+        await loadStatus();
+        await loadModels();
+        await updateRecommendation();
+      } catch (e) {
+        alert('Toggle provider error: ' + e);
+      }
+    }
+
+    async function toggleModel(modelId, enable) {
+      try {
+        await fetch('/api/toggle-model', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({model_id: modelId, is_active: enable})
+        });
+        await loadStatus();
+        await loadModels();
+        await updateRecommendation();
+      } catch (e) {
+        alert('Toggle model error: ' + e);
+      }
+    }
+
+    let lastClassification = null;
+    let previousTierBeforeRoute = 2;
+
+    async function runAutoRoute() {
+      const input = document.getElementById('autoRouteInput');
+      const prompt = input.value.trim();
+      const emptyWarn = document.getElementById('emptyPromptWarning');
+      
+      if (!prompt) {
+        if (emptyWarn) {
+          emptyWarn.classList.remove('hidden');
+          setTimeout(() => emptyWarn.classList.add('hidden'), 5000);
+        }
+        return;
+      }
+      if (emptyWarn) emptyWarn.classList.add('hidden');
+
+      try {
+        const res = await fetch(`/api/route?prompt=${encodeURIComponent(prompt)}`);
+        const data = await res.json();
+        if (data.classification) {
+          applyClassification(data.classification, prompt);
+        }
+      } catch (e) {
+        console.error('Auto-route failed:', e);
+      }
+    }
+
+    async function runWorkspaceScan() {
+      const emptyWarn = document.getElementById('emptyPromptWarning');
+      if (emptyWarn) emptyWarn.classList.add('hidden');
+      try {
+        const res = await fetch('/api/route');
+        const data = await res.json();
+        if (data.classification) {
+          applyClassification(data.classification, '');
+        }
+      } catch (e) {
+        console.error('Workspace scan failed:', e);
+      }
+    }
+
+    function toggleDiagDrawer() {
+      const drawer = document.getElementById('diagDrawer');
+      const toggleText = document.getElementById('diagToggleText');
+      if (drawer.classList.contains('hidden')) {
+        drawer.classList.remove('hidden');
+        toggleText.textContent = 'Hide Diagnostics & CLI';
+      } else {
+        drawer.classList.add('hidden');
+        toggleText.textContent = 'View Diagnostics & CLI';
+      }
+    }
+
+    function revertToPreviousTier() {
+      if (previousTierBeforeRoute) {
+        setTier(previousTierBeforeRoute);
+        const revertBtn = document.getElementById('revertTierBtn');
+        if (revertBtn) revertBtn.classList.add('hidden');
+      }
+    }
+
+    function applyClassification(cls, promptText) {
+      previousTierBeforeRoute = currentTier;
+      lastClassification = cls;
+
+      const banner = document.getElementById('classificationBanner');
+      if (banner) {
+        banner.classList.remove('hidden');
+        document.getElementById('classTierBadge').textContent = `Auto-Routed: Tier ${cls.tier_id}`;
+        document.getElementById('classIntentBadge').textContent = cls.intent;
+        document.getElementById('classConfBadge').textContent = `(${Math.round(cls.confidence * 100)}% confidence)`;
+        document.getElementById('classTokenEstimate').textContent = `~${cls.estimated_tokens.toLocaleString()} tokens`;
+        document.getElementById('classSignalsText').textContent = cls.signals && cls.signals.length ? cls.signals.join(' • ') : 'Auto-detected';
+        
+        // Show Revert button if tier actually changed
+        const revertBtn = document.getElementById('revertTierBtn');
+        if (revertBtn) {
+          if (previousTierBeforeRoute !== cls.tier_id) {
+            revertBtn.classList.remove('hidden');
+            revertBtn.textContent = `↩️ Revert to Tier ${previousTierBeforeRoute}`;
+          } else {
+            revertBtn.classList.add('hidden');
+          }
+        }
+
+        // Update CLI and diagnostics
+        const cliCmd = promptText ? `ai-burn route "${promptText}"` : `ai-burn route`;
+        document.getElementById('cliCommandBox').textContent = cliCmd;
+        
+        const ws = cls.workspace_stats || cls.workspace_signals || {};
+        const diagBox = document.getElementById('diagDetailsBox');
+        diagBox.innerHTML = `
+          <div class="flex flex-wrap gap-4 mt-1">
+            <span>Diff lines: <strong class="text-slate-200">${(ws.additions || 0) + (ws.deletions || 0) || ws.diff_lines || 0}</strong></span>
+            <span>Diff chars: <strong class="text-slate-200">${ws.diff_chars || ws.total_diff_chars || 0}</strong></span>
+            <span>Uncommitted files: <strong class="text-slate-200">${ws.file_count || (ws.uncommitted_files || []).length || 0}</strong></span>
+            <span>Explicit input: <strong class="text-slate-200">${cls.has_explicit_input ? 'Yes' : 'No (defaulted)'}</strong></span>
+          </div>
+        `;
+      }
+      setTier(cls.tier_id, false);
+      if (cls.recommended_strategy) {
+        setStrategy(cls.recommended_strategy);
+      } else {
+        updateRecommendation();
+      }
+    }
+
+    async function runWebBenchmark() {
+      const btn = document.getElementById('benchRunBtn');
+      const spinner = document.getElementById('benchSpinner');
+      const panel = document.getElementById('benchmarksPanel');
+      const grid = document.getElementById('benchmarksGrid');
+
+      btn.disabled = true;
+      spinner.classList.remove('hidden');
+      panel.classList.remove('hidden');
+      grid.innerHTML = `<div class="col-span-4 py-8 text-center text-xs text-purple-300 font-mono">Running 4 local golden benchmark suites in isolated sandboxes...</div>`;
+
+      try {
+        const res = await fetch('/api/benchmark');
+        const data = await res.json();
+        const results = data.results || [];
+
+        grid.innerHTML = results.map(r => {
+          const isPassed = r.status === 'passed';
+          return `
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border ${isPassed ? 'border-emerald-500/30' : 'border-rose-500/40'} space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isPassed ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300'}">
+                  ${isPassed ? '✓ PASSED' : '✕ FAILED'}
+                </span>
+                <span class="text-[10px] font-mono text-slate-400">Tier ${r.tier_id}</span>
+              </div>
+              <div class="text-xs font-bold text-white">${r.task_name}</div>
+              <div class="space-y-1 font-mono text-[10px] text-slate-400 border-t border-slate-850 pt-1.5">
+                <div>Model: <strong class="text-slate-300">${r.model_id}</strong></div>
+                <div>Test Exec: <strong class="text-emerald-400">${r.wall_clock_test_sec}s</strong></div>
+                <div>Lane Baseline: <strong class="text-slate-300">${r.execution_sec}s</strong></div>
+                <div>Tokens Eval: <strong class="text-blue-300">${r.tokens_evaluated.toLocaleString()}</strong></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        grid.innerHTML = `<div class="col-span-4 p-4 text-xs text-rose-400">Benchmark error: ${e}</div>`;
+      } finally {
+        btn.disabled = false;
+        spinner.classList.add('hidden');
+      }
+    }
+
+    async function updateRecommendation() {
+      try {
+        const res = await fetch(`/api/recommend?tier=${currentTier}&strategy=${currentStrategy}`);
+        const data = await res.json();
+        const top = data.top_recommendation;
+        const runner = data.runner_up;
+        const rationale = data.rationale || [];
+
+        const box = document.getElementById('recResultBox');
+        if (!top) {
+          box.innerHTML = `
+            <div class="col-span-3 p-6 rounded-xl bg-slate-900/60 border border-amber-500/40 text-center space-y-2">
+              <div class="text-amber-400 font-bold text-base">⚠️ No Active Models Available in Tier ${currentTier}</div>
+              <p class="text-xs text-slate-300">${data.error || 'All candidate models or subscriptions for this tier have been disabled.'}</p>
+              <p class="text-[11px] text-slate-400">Enable at least one model in the catalog below or re-enable its subscription provider above to see the recommendation refactor.</p>
+            </div>
+          `;
+          return;
+        }
+
+        box.innerHTML = `
+          <!-- Top Choice Card -->
+          <div class="p-5 rounded-xl bg-slate-900 border border-emerald-500/40 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 uppercase tracking-wider">Top Recommendation</span>
+              <span class="text-xs font-mono text-emerald-400 font-bold">${currentStrategy === 'quota_first' ? 'Quota Score: ' + top.quota_first_score : 'Time Score: ' + top.time_reliability_score}</span>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="text-lg font-bold text-white">${top.display_name}</h3>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${getProviderBadge(top.provider)}">${top.provider}</span>
+              </div>
+              <div class="text-xs text-blue-400 font-medium mt-0.5">${top.harness} (${top.pool_name || 'Primary Pool'})</div>
+              ${top.other_modes && top.other_modes.length ? `
+                <div class="text-[11px] text-emerald-400/90 font-medium mt-1">
+                  ⚡ Optimal Effort: <span class="text-white font-bold">${(top.reasoning_effort || 'Normal').toUpperCase()}</span> 
+                  <span class="text-slate-400 font-normal">(${top.other_modes.join(', ')} modes consolidated)</span>
+                </div>
+              ` : ''}
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono">
+              <div><span class="text-slate-400">Sub Cost/Task:</span> <strong class="text-emerald-400">$${top.cost_per_completed_task}</strong></div>
+              <div><span class="text-slate-400">Tasks/Pool:</span> <strong class="text-white">${top.tasks_per_pool_cycle}</strong></div>
+              <div><span class="text-slate-400">Tokens/Done:</span> <strong class="text-slate-300">${top.success_adjusted_tokens.toLocaleString()}</strong></div>
+              <div><span class="text-slate-400">Latency/Done:</span> <strong class="text-slate-300">${top.success_adjusted_seconds}s</strong></div>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed italic">${top.recommendation_notes}</p>
+          </div>
+
+          <!-- Runner Up Card -->
+          ${runner ? `
+            <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-300 uppercase tracking-wider">Strong Alternative</span>
+                <span class="text-xs font-mono text-blue-400 font-bold">${currentStrategy === 'quota_first' ? 'Quota Score: ' + runner.quota_first_score : 'Time Score: ' + runner.time_reliability_score}</span>
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h3 class="text-lg font-bold text-white">${runner.display_name}</h3>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${getProviderBadge(runner.provider)}">${runner.provider}</span>
+                </div>
+                <div class="text-xs text-indigo-400 font-medium flex items-center gap-2 mt-0.5">
+                  <span>${runner.harness}</span>
+                  ${runner.pool_id !== top.pool_id ? `
+                    <span class="px-2 py-0.2 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                      🛡️ Independent Quota: ${runner.sub_name || runner.pool_name || 'Separate Pool'}
+                    </span>
+                  ` : ''}
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono">
+                <div><span class="text-slate-400">Sub Cost/Task:</span> <strong class="text-emerald-400">$${runner.cost_per_completed_task}</strong></div>
+                <div><span class="text-slate-400">Tasks/Pool:</span> <strong class="text-white">${runner.tasks_per_pool_cycle}</strong></div>
+                <div><span class="text-slate-400">Tokens/Done:</span> <strong class="text-slate-300">${runner.success_adjusted_tokens.toLocaleString()}</strong></div>
+                <div><span class="text-slate-400">Latency/Done:</span> <strong class="text-slate-300">${runner.success_adjusted_seconds}s</strong></div>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed italic">${runner.recommendation_notes}</p>
+            </div>
+          ` : `
+            <div class="p-5 rounded-xl bg-slate-900/30 border border-slate-800/60 flex items-center justify-center text-xs text-slate-500">
+              No secondary alternative model currently enabled in this tier.
+            </div>
+          `}
+
+          <!-- Strategic Rationale Card -->
+          <div class="p-5 rounded-xl bg-slate-900/40 border border-slate-800 space-y-3 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-bold text-amber-300 flex items-center gap-1.5 mb-2">
+                <span>🧠</span> Live Routing Guidance
+              </div>
+              <ul class="space-y-2 text-xs text-slate-300 list-disc list-inside">
+                ${rationale.map(r => `<li class="leading-relaxed">${r}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="p-2.5 bg-blue-950/40 border border-blue-800/60 rounded-lg text-[11px] text-blue-300">
+              💡 Tip: Sort the table below by <strong>Sub Cost</strong> or <strong>Raw API Cost</strong> to compare savings across other harnesses.
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        console.error('Failed to update recommendation:', e);
+      }
+    }
+
+    async function loadModels() {
+      try {
+        const res = await fetch('/api/models');
+        const data = await res.json();
+        allModels = data.models;
+        renderModelsTable();
+      } catch (e) {
+        console.error('Failed to load models:', e);
+      }
+    }
+
+    function toggleSort(colKey) {
+      if (currentSortKey === colKey) {
+        currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSortKey = colKey;
+        currentSortDir = (colKey === 'name') ? 'asc' : (colKey.includes('cost') || colKey === 'latency') ? 'asc' : 'desc';
+      }
+      // Update dropdown selection if matches
+      const dd = document.getElementById('sortDropdown');
+      const val = `${currentSortKey}_${currentSortDir}`;
+      if (dd.querySelector(`option[value="${val}"]`)) {
+        dd.value = val;
+      }
+      renderModelsTable();
+    }
+
+    function handleSortDropdown() {
+      const val = document.getElementById('sortDropdown').value;
+      const parts = val.split('_');
+      currentSortDir = parts.pop();
+      currentSortKey = parts.join('_');
+      renderModelsTable();
+    }
+
+    function updateSortIcons() {
+      ['name', 'tasks_pool', 'tasks_month', 'sub_cost', 'api_cost', 'latency'].forEach(k => {
+        const span = document.getElementById(`sortIcon_${k}`);
+        if (!span) return;
+        if (k === currentSortKey) {
+          span.innerText = currentSortDir === 'asc' ? '▲' : '▼';
+          span.className = 'text-blue-400 font-bold ml-0.5 text-[9px]';
+        } else {
+          span.innerText = '↕';
+          span.className = 'text-slate-600 font-normal ml-0.5 text-[9px]';
+        }
+      });
+    }
+
+    function getProviderBadge(provider) {
+      const p = (provider || '').toLowerCase();
+      if (p.includes('openai')) return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+      if (p.includes('google')) return 'bg-blue-500/20 text-blue-300 border-blue-500/40';
+      if (p.includes('anthropic')) return 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+      if (p.includes('xai')) return 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+      if (p.includes('cursor')) return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40';
+      return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
+    }
+
+    function renderModelsTable() {
+      updateSortIcons();
+      const q = document.getElementById('modelSearch').value.toLowerCase();
+      const pFilter = document.getElementById('providerFilter').value;
+      const hFilter = document.getElementById('harnessFilter').value;
+      const sFilter = document.getElementById('statusFilter').value;
+
+      // 1. Filter models for current tier and search criteria
+      let filtered = allModels.filter(m => {
+        if (m.tier_id !== currentTier) return false;
+        if (pFilter !== 'all' && m.provider !== pFilter) return false;
+        if (hFilter !== 'all' && !m.harness.includes(hFilter)) return false;
+        if (sFilter === 'active' && !m.is_active) return false;
+        if (sFilter === 'disabled' && m.is_active) return false;
+        if (q && !m.display_name.toLowerCase().includes(q) && !m.provider.toLowerCase().includes(q) && !m.model_id.toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      // 2. Sort filtered models
+      filtered.sort((a, b) => {
+        // Active models always come before disabled models unless filtering specifically
+        if (a.is_active !== b.is_active) {
+          return a.is_active ? -1 : 1;
+        }
+
+        let valA, valB;
+        if (currentSortKey === 'sub_cost') {
+          valA = a.cost_per_completed_task;
+          valB = b.cost_per_completed_task;
+        } else if (currentSortKey === 'api_cost') {
+          valA = a.api_cost_per_task;
+          valB = b.api_cost_per_task;
+        } else if (currentSortKey === 'tasks_pool') {
+          valA = a.tasks_per_pool_cycle;
+          valB = b.tasks_per_pool_cycle;
+        } else if (currentSortKey === 'tasks_month') {
+          valA = a.tasks_per_month;
+          valB = b.tasks_per_month;
+        } else if (currentSortKey === 'latency') {
+          valA = a.success_adjusted_seconds;
+          valB = b.success_adjusted_seconds;
+        } else if (currentSortKey === 'name') {
+          valA = a.display_name.toLowerCase();
+          valB = b.display_name.toLowerCase();
+        } else { // default
+          valA = a.quota_first_score;
+          valB = b.quota_first_score;
+          return b.quota_first_score - a.quota_first_score;
+        }
+
+        if (typeof valA === 'string') {
+          return currentSortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        } else {
+          return currentSortDir === 'asc' ? valA - valB : valB - valA;
+        }
+      });
+
+      // 3. Render table rows
+      const tbody = document.getElementById('modelsTableBody');
+      tbody.innerHTML = filtered.map(m => {
+        const isActive = Boolean(m.is_active);
+        const apiRateStr = `$${(m.input_cost_per_m || 0).toFixed(2)} / $${(m.output_cost_per_m || 0).toFixed(2)}`;
+        return `
+          <tr class="hover:bg-slate-800/40 transition ${isActive ? '' : 'opacity-40'}">
+            <td class="py-3 px-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}">
+                ${isActive ? 'ACTIVE' : 'OFF'}
+              </span>
+            </td>
+            <td class="py-3 px-3 font-semibold text-white">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="${isActive ? '' : 'line-through text-slate-400'}">${m.display_name}</span>
+                ${m.is_frontier ? '<span class="px-1.5 py-0.2 rounded text-[9px] bg-purple-500/20 text-purple-300">Frontier</span>' : ''}
+              </div>
+              <div class="text-[10px] text-slate-500 font-mono mt-0.5">${m.model_id}</div>
+            </td>
+            <td class="py-3 px-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${getProviderBadge(m.provider)}">
+                ${m.provider}
+              </span>
+            </td>
+            <td class="py-3 px-3 text-slate-300 font-mono text-[11px]">${m.harness}</td>
+            <td class="py-3 px-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${m.reasoning_effort === 'high' ? 'bg-purple-500/20 text-purple-300' : m.reasoning_effort === 'low' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-blue-500/20 text-blue-300'}">
+                ${m.reasoning_effort.toUpperCase()}
+              </span>
+            </td>
+            <td class="py-3 px-3 text-right font-mono font-bold ${isActive ? 'text-slate-200' : 'text-slate-500'}">${m.tasks_per_pool_cycle}</td>
+            <td class="py-3 px-3 text-right font-mono text-slate-300">${m.tasks_per_month.toLocaleString()}</td>
+            <td class="py-3 px-3 text-right font-mono font-bold ${isActive ? 'text-emerald-400' : 'text-slate-500'}">
+              $${m.cost_per_completed_task.toFixed(4)}
+            </td>
+            <td class="py-3 px-3 text-right font-mono">
+              <div class="font-bold ${isActive ? 'text-blue-300' : 'text-slate-500'}">$${(m.api_cost_per_task || 0).toFixed(4)}</div>
+              <div class="text-[9px] text-slate-500">${apiRateStr}</div>
+            </td>
+            <td class="py-3 px-3 text-right font-mono text-slate-400">${m.success_adjusted_seconds}s</td>
+            <td class="py-3 px-3 text-center">
+              <button onclick="toggleModel('${m.model_id}', ${!isActive})" class="px-2.5 py-1 rounded text-[11px] font-bold transition ${isActive ? 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30' : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30'}">
+                ${isActive ? 'Disable' : 'Enable'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function setTier(tier, triggerUpdate = true) {
+      currentTier = tier;
+      for (let i = 1; i <= 4; i++) {
+        const btn = document.getElementById(`tierBtn${i}`);
+        btn.className = i === tier 
+          ? 'px-2.5 py-1 text-xs font-semibold rounded bg-blue-600 text-white transition'
+          : 'px-2.5 py-1 text-xs font-medium rounded text-slate-400 hover:text-white transition';
+      }
+      if (triggerUpdate) {
+        updateRecommendation();
+      }
+      renderModelsTable();
+    }
+
+    function setStrategy(strat) {
+      currentStrategy = strat;
+      document.getElementById('stratQuota').className = strat === 'quota_first'
+        ? 'px-3 py-1 text-xs font-semibold rounded bg-emerald-600 text-white transition'
+        : 'px-3 py-1 text-xs font-semibold rounded text-slate-400 hover:text-white transition';
+      document.getElementById('stratTime').className = strat === 'time_reliability_first'
+        ? 'px-3 py-1 text-xs font-semibold rounded bg-blue-600 text-white transition'
+        : 'px-3 py-1 text-xs font-semibold rounded text-slate-400 hover:text-white transition';
+      updateRecommendation();
+    }
+
+    async function triggerSync() {
+      const btn = document.getElementById('syncBtn');
+      const icon = document.getElementById('syncIcon');
+      btn.disabled = true;
+      icon.classList.add('animate-spin');
+      btn.innerText = 'Syncing...';
+
+      try {
+        const res = await fetch('/api/sync', {method: 'POST'});
+        const data = await res.json();
+        alert(`Sync complete! ${data.changes_count || 0} changes detected and applied.`);
+        await loadStatus();
+        await loadModels();
+        await updateRecommendation();
+      } catch (e) {
+        alert('Sync error: ' + e);
+      } finally {
+        btn.disabled = false;
+        icon.classList.remove('animate-spin');
+        btn.innerHTML = `<svg id="syncIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Sync Live Models`;
+      }
+    }
+
+    // Initialize
+    loadStatus();
+    loadModels();
+    updateRecommendation();
+  </script>
+</body>
+</html>
