@@ -12,5 +12,9 @@ if BASE_DIR not in sys.path:
 from server.app import run_server
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8787))
-    run_server(port=port)
+    import argparse
+    parser = argparse.ArgumentParser(description="OmniBurn Server")
+    parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", 8787)), help="Port to listen on")
+    args, _ = parser.parse_known_args()
+    run_server(port=args.port)
+

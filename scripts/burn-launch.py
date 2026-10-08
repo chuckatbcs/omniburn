@@ -21,18 +21,58 @@ import time
 import urllib.request
 import urllib.error
 
-OMNIBURN_DIR = os.getenv("OMNIBURN_DIR", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+def _resolve_omniburn_dir() -> str:
+    env_dir = os.getenv("OMNIBURN_DIR")
+    if env_dir and os.path.exists(os.path.join(env_dir, "serve.py")):
+        return os.path.abspath(env_dir)
+
+    script_real = os.path.realpath(__file__)
+    candidate = os.path.dirname(os.path.dirname(script_real))
+    if os.path.exists(os.path.join(candidate, "serve.py")):
+        return os.path.abspath(candidate)
+
+    for c in [
+        os.path.expanduser("~/.gemini/antigravity/scratch/ai-burn-rate-tracker"),
+        os.path.expanduser("~/Apps/omniburn"),
+        os.path.expanduser("~/omniburn"),
+        os.path.expanduser("~/Projects/omniburn"),
+    ]:
+        if os.path.exists(os.path.join(c, "serve.py")):
+            return os.path.abspath(c)
+
+    return os.path.abspath(candidate)
+
+
+def _resolve_ledger_dir() -> str:
+    env_dir = os.getenv("BURN_LEDGER_DIR")
+    if env_dir and os.path.exists(env_dir):
+        return os.path.abspath(env_dir)
+
+    for c in [
+        os.path.expanduser("~/Apps/burn-ledger"),
+        os.path.expanduser("~/.gemini/antigravity/scratch/burn-ledger"),
+        os.path.expanduser("~/burn-ledger"),
+        os.path.expanduser("~/Projects/burn-ledger"),
+    ]:
+        if os.path.exists(os.path.join(c, "app", "main.py")):
+            return os.path.abspath(c)
+
+    return os.path.expanduser("~/Apps/burn-ledger")
+
+
+OMNIBURN_DIR = _resolve_omniburn_dir()
 OMNIBURN_PORT = int(os.getenv("OMNIBURN_PORT", 8787))
 OMNIBURN_URL = f"http://localhost:{OMNIBURN_PORT}"
 OMNIBURN_LOG = os.path.join(OMNIBURN_DIR, "omniburn.log")
 OMNIBURN_PID_FILE = "/tmp/omniburn_8787.pid"
 
-LEDGER_DIR = os.getenv("BURN_LEDGER_DIR", os.path.expanduser("~/Apps/burn-ledger"))
+LEDGER_DIR = _resolve_ledger_dir()
 LEDGER_PORT = int(os.getenv("BURN_LEDGER_PORT", 8795))
 LEDGER_URL = f"http://localhost:{LEDGER_PORT}"
 LEDGER_LOG = os.path.join(LEDGER_DIR, "burn-ledger.log")
 LEDGER_PID_FILE = "/tmp/burn_ledger_8795.pid"
 LEDGER_VENV_UVICORN = os.path.join(LEDGER_DIR, ".venv/bin/uvicorn")
+
 
 
 
@@ -126,7 +166,7 @@ def start_omniburn() -> bool:
     print(f"  🚀 Launching OmniBurn [Built by AGY] on {OMNIBURN_URL}...", end="", flush=True)
     log_f = open(OMNIBURN_LOG, "a")
     proc = subprocess.Popen(
-        ["python3", "serve.py", "--port", str(OMNIBURN_PORT)],
+        [sys.executable, "serve.py", "--port", str(OMNIBURN_PORT)],
         cwd=OMNIBURN_DIR,
         stdout=log_f,
         stderr=subprocess.STDOUT,
