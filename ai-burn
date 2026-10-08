@@ -14,7 +14,7 @@ if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
 from engine.db import get_connection, init_db
-from engine.sync_engine import sync_models
+from engine.sync_engine import sync_models, add_model, deprecate_model, restore_model, remove_model
 from engine.recommender import recommend
 from engine.telemetry_logger import log_task_run, get_telemetry_summary
 from engine.toggles import toggle_model, toggle_provider
@@ -151,6 +151,55 @@ def cmd_disable(args):
             print(f"✓ Provider/Subscription '{res['name']}' DISABLED ({res['models_affected']} models disabled).")
     else:
         print("Specify either --model <id> or --provider <name>.")
+
+def cmd_add_model(args):
+    data = {
+        "model_id": args.id,
+        "display_name": args.name or args.id,
+        "provider": args.provider,
+        "harness": args.harness,
+        "pool_id": args.pool,
+        "context_window": args.context,
+        "input_cost_per_m": args.in_cost,
+        "output_cost_per_m": args.out_cost,
+        "reasoning_effort": args.reasoning,
+        "speed_mode": args.speed,
+        "is_frontier": 1 if args.frontier else 0,
+        "is_active": True
+    }
+    res = add_model(data)
+    if "error" in res:
+        print(f"Error: {res['error']}")
+    else:
+        print(f"✓ Model '{res['display_name']}' ({res['model_id']}) registered/updated successfully.")
+        print(f"  Yields recalculated across all 4 tiers.")
+
+def cmd_deprecate(args):
+    res = deprecate_model(args.model, reason=args.reason)
+    if "error" in res:
+        print(f"Error: {res['error']}")
+    else:
+        print(f"✓ Model '{res['display_name']}' ({res['model_id']}) DEPRECATED.")
+        print(f"  Changelog event: MODEL_DEPRECATED ({args.reason}).")
+
+def cmd_restore(args):
+    res = restore_model(args.model)
+    if "error" in res:
+        print(f"Error: {res['error']}")
+    else:
+        print(f"✓ Model '{res['display_name']}' ({res['model_id']}) REACTIVATED.")
+        print(f"  Changelog event: MODEL_REACTIVATED.")
+
+def cmd_remove_model(args):
+    if not args.force:
+        print(f"Warning: This will permanently delete '{args.model}' and its yields.")
+        print(f"To confirm deletion, re-run with: `ai-burn remove-model {args.model} --force`")
+        return
+    res = remove_model(args.model)
+    if "error" in res:
+        print(f"Error: {res['error']}")
+    else:
+        print(f"✓ Model '{res['display_name']}' ({res['model_id']}) permanently removed.")
 
 def cmd_models(args):
     conn = get_connection()
@@ -388,6 +437,34 @@ def main():
     bm_parser.add_argument("--tier", type=int, choices=[1, 2, 3, 4], default=None, help="Specific tier to benchmark (1-4, default all)")
     bm_parser.add_argument("--model", default=None, help="Model ID to evaluate")
 
+    # add-model
+    add_parser = subparsers.add_parser("add-model", help="Manually add or update a model")
+    add_parser.add_argument("--id", required=True, help="Unique model identifier (e.g. anthropic/claude-3-7-sonnet)")
+    add_parser.add_argument("--name", help="Display name for model")
+    add_parser.add_argument("--provider", default="Custom", help="Provider name (default: Custom)")
+    add_parser.add_argument("--harness", default="Custom API", help="Harness name (default: Custom API)")
+    add_parser.add_argument("--pool", default="other_models", help="Quota pool ID (default: other_models)")
+    add_parser.add_argument("--context", type=int, default=128000, help="Context window token size")
+    add_parser.add_argument("--in-cost", type=float, default=0.0, help="Input token cost per million ($)")
+    add_parser.add_argument("--out-cost", type=float, default=0.0, help="Output token cost per million ($)")
+    add_parser.add_argument("--reasoning", choices=["low", "medium", "high"], default="medium", help="Reasoning effort level")
+    add_parser.add_argument("--speed", choices=["normal", "fast"], default="normal", help="Inference speed mode")
+    add_parser.add_argument("--frontier", action="store_true", help="Flag as frontier model")
+
+    # deprecate
+    dep_parser = subparsers.add_parser("deprecate", help="Mark a model as deprecated (disable from active routing)")
+    dep_parser.add_argument("model", help="Model ID to deprecate")
+    dep_parser.add_argument("--reason", default="Manually deprecated via CLI", help="Deprecation reason")
+
+    # restore
+    res_parser = subparsers.add_parser("restore", help="Reactivate a deprecated model")
+    res_parser.add_argument("model", help="Model ID to reactivate")
+
+    # remove-model
+    rem_parser = subparsers.add_parser("remove-model", help="Permanently delete a model from the catalog")
+    rem_parser.add_argument("model", help="Model ID to delete")
+    rem_parser.add_argument("--force", action="store_true", help="Confirm permanent deletion")
+
     # serve
     serve_parser = subparsers.add_parser("serve", help="Run local web server on port 8787")
     serve_parser.add_argument("--port", type=int, default=8787, help="Port to listen on")
@@ -413,6 +490,14 @@ def main():
         cmd_enable(args)
     elif args.command == "disable":
         cmd_disable(args)
+    elif args.command == "add-model":
+        cmd_add_model(args)
+    elif args.command == "deprecate":
+        cmd_deprecate(args)
+    elif args.command == "restore":
+        cmd_restore(args)
+    elif args.command == "remove-model":
+        cmd_remove_model(args)
     elif args.command == "models":
         cmd_models(args)
     elif args.command == "log":

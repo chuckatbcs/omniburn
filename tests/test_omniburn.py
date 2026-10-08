@@ -121,5 +121,63 @@ class TestOmniBurn(unittest.TestCase):
         self.assertEqual(res["status"], "passed")
         self.assertGreater(res["tokens_evaluated"], 0)
 
+    def test_model_lifecycle_management(self):
+        from engine.sync_engine import add_model, deprecate_model, restore_model, remove_model
+        
+        test_id = "test-unit-model-x"
+        # 1. Add model
+        add_res = add_model({
+            "model_id": test_id,
+            "display_name": "Test Unit Model X",
+            "provider": "UnitTest",
+            "harness": "Test Harness",
+            "pool_id": "other_models",
+            "context_window": 128000,
+            "input_cost_per_m": 1.5,
+            "output_cost_per_m": 6.0
+        })
+        self.assertEqual(add_res["status"], "ok")
+        self.assertEqual(add_res["event_type"], "NEW_MODEL")
+
+        # Verify in DB
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT is_active FROM models WHERE model_id = ?", (test_id,))
+        row = cur.fetchone()
+        self.assertIsNotNone(row)
+        self.assertEqual(row["is_active"], 1)
+
+        # Verify yields generated
+        cur.execute("SELECT COUNT(*) as cnt FROM model_task_yields WHERE model_id = ?", (test_id,))
+        yield_count = cur.fetchone()["cnt"]
+        self.assertEqual(yield_count, 4)
+
+        # 2. Deprecate model
+        dep_res = deprecate_model(test_id, reason="Unit test deprecation")
+        self.assertEqual(dep_res["status"], "ok")
+        self.assertEqual(dep_res["event_type"], "MODEL_DEPRECATED")
+
+        cur.execute("SELECT is_active FROM models WHERE model_id = ?", (test_id,))
+        self.assertEqual(cur.fetchone()["is_active"], 0)
+
+        # 3. Restore model
+        rest_res = restore_model(test_id)
+        self.assertEqual(rest_res["status"], "ok")
+        self.assertEqual(rest_res["event_type"], "MODEL_REACTIVATED")
+
+        cur.execute("SELECT is_active FROM models WHERE model_id = ?", (test_id,))
+        self.assertEqual(cur.fetchone()["is_active"], 1)
+
+        # 4. Remove model
+        rem_res = remove_model(test_id)
+        self.assertEqual(rem_res["status"], "ok")
+        self.assertEqual(rem_res["event_type"], "MODEL_REMOVED")
+
+        cur.execute("SELECT * FROM models WHERE model_id = ?", (test_id,))
+        self.assertIsNone(cur.fetchone())
+        cur.execute("SELECT COUNT(*) as cnt FROM model_task_yields WHERE model_id = ?", (test_id,))
+        self.assertEqual(cur.fetchone()["cnt"], 0)
+        conn.close()
+
 if __name__ == "__main__":
     unittest.main()

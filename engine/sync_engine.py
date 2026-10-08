@@ -32,7 +32,7 @@ def fetch_local_agy_models():
     error = None
     try:
         import re
-        out = subprocess.check_output(["agy", "models"], stderr=subprocess.PIPE, timeout=5).decode("utf-8")
+        out = subprocess.check_output(["agy", "models"], stderr=subprocess.PIPE, timeout=12).decode("utf-8")
         for raw_line in out.strip().splitlines():
             line = re.sub(r'^[⠋⠙⠹⠸⠼⠴⠦⠧⠇\s]*Fetching available models\.\.\.', '', raw_line).strip()
             if not line:
@@ -42,16 +42,29 @@ def fetch_local_agy_models():
                 model_id = parts[0].strip()
                 name = parts[1].strip()
                 
-                # Determine pool and reasoning
+                # Determine pool, provider, and benchmark cost
                 if "gemini" in model_id:
                     pool = "gemini_models"
                     provider = "Google"
+                    if "pro" in model_id:
+                        in_cost, out_cost = 1.25, 5.00
+                        context = 2000000
+                    else:
+                        in_cost, out_cost = 0.10, 0.40
+                        context = 1000000
                 elif "claude" in model_id:
                     pool = "claude_gpt_models"
                     provider = "Anthropic"
+                    context = 300000 if ("5-5" in model_id or "5" in model_id) else 200000
+                    if "opus" in model_id:
+                        in_cost, out_cost = (4.00, 20.00) if "5-5" in model_id else (5.00, 25.00)
+                    else:
+                        in_cost, out_cost = (2.00, 10.00) if "5-5" in model_id else (3.00, 15.00)
                 else:
                     pool = "claude_gpt_models"
                     provider = "Open Source"
+                    in_cost, out_cost = 0.50, 2.00
+                    context = 128000
                 
                 if "high" in model_id or "thinking" in model_id:
                     reasoning = "high"
@@ -60,8 +73,6 @@ def fetch_local_agy_models():
                 else:
                     reasoning = "medium"
                 
-                context = 2000000 if "pro" in model_id else (1000000 if "gemini" in model_id else 200000)
-                
                 models.append({
                     "model_id": model_id,
                     "display_name": name,
@@ -69,9 +80,11 @@ def fetch_local_agy_models():
                     "harness": "Antigravity",
                     "pool_id": pool,
                     "context_window": context,
+                    "input_cost_per_m": in_cost,
+                    "output_cost_per_m": out_cost,
                     "reasoning_effort": reasoning,
                     "speed_mode": "normal",
-                    "is_frontier": 1 if ("3.8" in model_id or "3.1" in model_id or "claude" in model_id) else 0
+                    "is_frontier": 1 if ("3.8" in model_id or "3.1" in model_id or "claude" in model_id or "5-5" in model_id) else 0
                 })
     except Exception as e:
         error = str(e)
@@ -179,27 +192,36 @@ def sync_models(db_path=None):
                 """, (now_iso, mid, "Antigravity model no longer reported by agy models CLI"))
                 changes_logged.append({"event": "MODEL_DEPRECATED", "model_id": mid})
 
-    for m in agy_models:
-        mid = m["model_id"]
-        if mid not in existing_models:
-            cursor.execute("""
-                INSERT INTO models (
-                    model_id, display_name, provider, harness, pool_id,
-                    context_window, reasoning_effort, speed_mode, is_frontier,
-                    is_active, last_seen
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?);
-            """, (
-                mid, m["display_name"], m["provider"], m["harness"], m["pool_id"],
-                m["context_window"], m["reasoning_effort"], m["speed_mode"],
-                m["is_frontier"], now_iso
-            ))
-            cursor.execute("""
-                INSERT INTO model_changelog (timestamp, event_type, model_id, details)
-                VALUES (?, 'NEW_MODEL', ?, ?);
-            """, (now_iso, mid, f"Discovered new Antigravity local model: {m['display_name']} ({m['pool_id']})"))
-            changes_logged.append({"event": "NEW_MODEL", "model_id": mid, "name": m["display_name"]})
-        else:
-            cursor.execute("UPDATE models SET last_seen = ?, is_active = 1 WHERE model_id = ?", (now_iso, mid))
+        for m in agy_models:
+            mid = m["model_id"]
+            if mid not in existing_models:
+                cursor.execute("""
+                    INSERT INTO models (
+                        model_id, display_name, provider, harness, pool_id,
+                        context_window, input_cost_per_m, output_cost_per_m,
+                        reasoning_effort, speed_mode, is_frontier,
+                        is_active, last_seen
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?);
+                """, (
+                    mid, m["display_name"], m["provider"], m["harness"], m["pool_id"],
+                    m["context_window"], m["input_cost_per_m"], m["output_cost_per_m"],
+                    m["reasoning_effort"], m["speed_mode"],
+                    m["is_frontier"], now_iso
+                ))
+                cursor.execute("""
+                    INSERT INTO model_changelog (timestamp, event_type, model_id, details)
+                    VALUES (?, 'NEW_MODEL', ?, ?);
+                """, (now_iso, mid, f"Discovered new Antigravity local model: {m['display_name']} ({m['pool_id']})"))
+                changes_logged.append({"event": "NEW_MODEL", "model_id": mid, "name": m["display_name"]})
+            else:
+                old = existing_models[mid]
+                if old.get("is_active") == 0:
+                    cursor.execute("""
+                        INSERT INTO model_changelog (timestamp, event_type, model_id, details)
+                        VALUES (?, 'MODEL_REACTIVATED', ?, ?);
+                    """, (now_iso, mid, f"Antigravity model reactivated in agy models: {m['display_name']}"))
+                    changes_logged.append({"event": "MODEL_REACTIVATED", "model_id": mid, "name": m["display_name"]})
+                cursor.execute("UPDATE models SET last_seen = ?, is_active = 1 WHERE model_id = ?", (now_iso, mid))
 
     # 3. Ingest local Ollama models
     ollama_models, ollama_err = fetch_local_ollama_models()
@@ -213,6 +235,17 @@ def sync_models(db_path=None):
             INSERT OR IGNORE INTO quota_pools (id, sub_id, pool_name, reset_window_hours, window_type, ui_granularity_pct, current_pct_remaining, weekly_pct_remaining, last_reset)
             VALUES ('local_ollama', 'local-ollama', 'Local GPU/CPU Inference', 720.0, 'unmetered', 1, 100, 100, ?);
         """, (now_iso,))
+
+        active_ollama_ids = {om["model_id"] for om in ollama_models}
+        for mid, old in existing_models.items():
+            if old.get("harness") == "Ollama (Local)" and mid not in active_ollama_ids and old.get("is_active") == 1:
+                cursor.execute("UPDATE models SET is_active = 0 WHERE model_id = ?", (mid,))
+                cursor.execute("""
+                    INSERT INTO model_changelog (timestamp, event_type, model_id, details)
+                    VALUES (?, 'MODEL_DEPRECATED', ?, ?);
+                """, (now_iso, mid, "Local Ollama model no longer found on localhost"))
+                changes_logged.append({"event": "MODEL_DEPRECATED", "model_id": mid})
+
         for om in ollama_models:
             omid = om["model_id"]
             if omid not in existing_models:
@@ -239,9 +272,16 @@ def sync_models(db_path=None):
                 """, (now_iso, omid, f"Discovered local Ollama model: {om['display_name']}"))
                 changes_logged.append({"event": "NEW_MODEL", "model_id": omid, "name": om["display_name"]})
             else:
+                old = existing_models[omid]
+                if old.get("is_active") == 0:
+                    cursor.execute("""
+                        INSERT INTO model_changelog (timestamp, event_type, model_id, details)
+                        VALUES (?, 'MODEL_REACTIVATED', ?, ?);
+                    """, (now_iso, omid, f"Local Ollama model restored: {om['display_name']}"))
+                    changes_logged.append({"event": "MODEL_REACTIVATED", "model_id": omid, "name": om["display_name"]})
                 cursor.execute("UPDATE models SET last_seen = ?, is_active = 1 WHERE model_id = ?", (now_iso, omid))
 
-    # 3. Ingest OpenRouter feed for key frontier models
+    # 4. Ingest OpenRouter feed for key frontier models and pricing
     openrouter_list = fetch_openrouter_models()
     for rm in openrouter_list:
         rm_id = rm.get("id", "")
@@ -283,7 +323,7 @@ def sync_models(db_path=None):
 
     conn.commit()
 
-    # 4. Automatically recalculate yields if changes occurred
+    # 5. Automatically recalculate yields if changes occurred
     recalculate_all_yields(conn)
     conn.close()
 
@@ -297,6 +337,191 @@ def sync_models(db_path=None):
     }
     print(f"Sync complete: {len(changes_logged)} changes logged. Yields updated.")
     return summary
+
+def add_model(model_data, db_path=None):
+    """
+    Manually registers or updates a model in the catalog.
+    Recalculates yields across all 4 workload tiers automatically.
+    """
+    model_id = (model_data.get("model_id") or "").strip()
+    if not model_id:
+        return {"error": "model_id is required"}
+
+    display_name = (model_data.get("display_name") or model_id).strip()
+    provider = (model_data.get("provider") or "Custom").strip()
+    harness = (model_data.get("harness") or "Custom API").strip()
+    pool_id = (model_data.get("pool_id") or "other_models").strip()
+    context_window = int(model_data.get("context_window", 128000))
+    input_cost_per_m = float(model_data.get("input_cost_per_m", 0.0))
+    output_cost_per_m = float(model_data.get("output_cost_per_m", 0.0))
+    reasoning_effort = model_data.get("reasoning_effort", "medium")
+    speed_mode = model_data.get("speed_mode", "normal")
+    is_frontier = 1 if model_data.get("is_frontier") else 0
+    is_active = 1 if model_data.get("is_active", True) else 0
+
+    conn = get_connection(db_path)
+    cursor = conn.cursor()
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    cursor.execute("SELECT model_id FROM models WHERE model_id = ?", (model_id,))
+    existing = cursor.fetchone()
+
+    if existing:
+        cursor.execute("""
+            UPDATE models
+            SET display_name = ?, provider = ?, harness = ?, pool_id = ?,
+                context_window = ?, input_cost_per_m = ?, output_cost_per_m = ?,
+                reasoning_effort = ?, speed_mode = ?, is_frontier = ?,
+                is_active = ?, last_seen = ?
+            WHERE model_id = ?;
+        """, (
+            display_name, provider, harness, pool_id,
+            context_window, input_cost_per_m, output_cost_per_m,
+            reasoning_effort, speed_mode, is_frontier,
+            is_active, now_iso, model_id
+        ))
+        event_type = "MODEL_UPDATED"
+        details = f"Manually updated model: {display_name} ({model_id})"
+    else:
+        cursor.execute("""
+            INSERT INTO models (
+                model_id, display_name, provider, harness, pool_id,
+                context_window, input_cost_per_m, output_cost_per_m,
+                reasoning_effort, speed_mode, is_frontier,
+                is_active, last_seen
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        """, (
+            model_id, display_name, provider, harness, pool_id,
+            context_window, input_cost_per_m, output_cost_per_m,
+            reasoning_effort, speed_mode, is_frontier,
+            is_active, now_iso
+        ))
+        event_type = "NEW_MODEL"
+        details = f"Manually registered model: {display_name} ({model_id})"
+
+    cursor.execute("""
+        INSERT INTO model_changelog (timestamp, event_type, model_id, details)
+        VALUES (?, ?, ?, ?);
+    """, (now_iso, event_type, model_id, details))
+
+    conn.commit()
+    recalculate_all_yields(conn)
+    conn.close()
+
+    return {
+        "status": "ok",
+        "model_id": model_id,
+        "display_name": display_name,
+        "event_type": event_type,
+        "details": details
+    }
+
+def deprecate_model(model_id, reason="Manually deprecated", db_path=None):
+    """
+    Marks a model as deprecated/inactive (is_active = 0) and records changelog.
+    Recalculates yields so routers omit it from active routing.
+    """
+    if not model_id:
+        return {"error": "model_id is required"}
+
+    conn = get_connection(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT model_id, display_name, is_active FROM models WHERE model_id = ?", (model_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return {"error": f"Model '{model_id}' not found"}
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    cursor.execute("UPDATE models SET is_active = 0 WHERE model_id = ?", (model_id,))
+    details = f"Model '{row['display_name']}' ({model_id}) deprecated: {reason}"
+    cursor.execute("""
+        INSERT INTO model_changelog (timestamp, event_type, model_id, details)
+        VALUES (?, 'MODEL_DEPRECATED', ?, ?);
+    """, (now_iso, model_id, details))
+
+    conn.commit()
+    recalculate_all_yields(conn)
+    conn.close()
+
+    return {
+        "status": "ok",
+        "model_id": model_id,
+        "display_name": row["display_name"],
+        "event_type": "MODEL_DEPRECATED",
+        "details": details
+    }
+
+def restore_model(model_id, db_path=None):
+    """
+    Reactivates a deprecated or disabled model (is_active = 1) and records changelog.
+    Recalculates yields.
+    """
+    if not model_id:
+        return {"error": "model_id is required"}
+
+    conn = get_connection(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT model_id, display_name FROM models WHERE model_id = ?", (model_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return {"error": f"Model '{model_id}' not found"}
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    cursor.execute("UPDATE models SET is_active = 1, last_seen = ? WHERE model_id = ?", (now_iso, model_id))
+    details = f"Model '{row['display_name']}' ({model_id}) reactivated."
+    cursor.execute("""
+        INSERT INTO model_changelog (timestamp, event_type, model_id, details)
+        VALUES (?, 'MODEL_REACTIVATED', ?, ?);
+    """, (now_iso, model_id, details))
+
+    conn.commit()
+    recalculate_all_yields(conn)
+    conn.close()
+
+    return {
+        "status": "ok",
+        "model_id": model_id,
+        "display_name": row["display_name"],
+        "event_type": "MODEL_REACTIVATED",
+        "details": details
+    }
+
+def remove_model(model_id, db_path=None):
+    """
+    Permanently deletes a model and its associated yield records from the catalog.
+    """
+    if not model_id:
+        return {"error": "model_id is required"}
+
+    conn = get_connection(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT model_id, display_name FROM models WHERE model_id = ?", (model_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return {"error": f"Model '{model_id}' not found"}
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    cursor.execute("DELETE FROM model_task_yields WHERE model_id = ?", (model_id,))
+    cursor.execute("DELETE FROM models WHERE model_id = ?", (model_id,))
+    details = f"Model '{row['display_name']}' ({model_id}) permanently removed from catalog."
+    cursor.execute("""
+        INSERT INTO model_changelog (timestamp, event_type, model_id, details)
+        VALUES (?, 'MODEL_REMOVED', ?, ?);
+    """, (now_iso, model_id, details))
+
+    conn.commit()
+    conn.close()
+
+    return {
+        "status": "ok",
+        "model_id": model_id,
+        "display_name": row["display_name"],
+        "event_type": "MODEL_REMOVED",
+        "details": details
+    }
 
 if __name__ == "__main__":
     res = sync_models()

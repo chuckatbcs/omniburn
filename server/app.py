@@ -8,11 +8,13 @@ import http.server
 import json
 import os
 import socketserver
+import threading
+import time
 import urllib.parse
 from datetime import datetime, timezone
 
 from engine.db import get_connection
-from engine.sync_engine import sync_models
+from engine.sync_engine import sync_models, add_model, deprecate_model, restore_model, remove_model
 from engine.recommender import recommend
 from engine.telemetry_logger import log_task_run, get_telemetry_summary
 from engine.toggles import toggle_model, toggle_provider
@@ -354,6 +356,46 @@ class OmniBurnHandler(http.server.SimpleHTTPRequestHandler):
                 self._send_json({"error": str(e)}, status_code=500)
             return
 
+        elif path == "/api/models/add":
+            try:
+                res = add_model(payload)
+                status = 400 if "error" in res else 200
+                self._send_json(res, status_code=status)
+            except Exception as e:
+                self._send_json({"error": str(e)}, status_code=500)
+            return
+
+        elif path == "/api/models/deprecate":
+            try:
+                mid = payload.get("model_id")
+                reason = payload.get("reason", "Manually deprecated via API")
+                res = deprecate_model(mid, reason=reason)
+                status = 400 if "error" in res else 200
+                self._send_json(res, status_code=status)
+            except Exception as e:
+                self._send_json({"error": str(e)}, status_code=500)
+            return
+
+        elif path == "/api/models/restore":
+            try:
+                mid = payload.get("model_id")
+                res = restore_model(mid)
+                status = 400 if "error" in res else 200
+                self._send_json(res, status_code=status)
+            except Exception as e:
+                self._send_json({"error": str(e)}, status_code=500)
+            return
+
+        elif path == "/api/models/remove":
+            try:
+                mid = payload.get("model_id")
+                res = remove_model(mid)
+                status = 400 if "error" in res else 200
+                self._send_json(res, status_code=status)
+            except Exception as e:
+                self._send_json({"error": str(e)}, status_code=500)
+            return
+
         elif path == "/api/toggle-provider":
             try:
                 provider = payload.get("provider") or payload.get("sub_id")
@@ -416,7 +458,37 @@ class OmniBurnHandler(http.server.SimpleHTTPRequestHandler):
 
         self._send_json({"error": "Endpoint not found"}, status_code=404)
 
+def start_background_sync(interval_hours=None):
+    """
+    Launches a background daemon thread that periodically runs sync_models.
+    Defaults to 6 hours or SYNC_INTERVAL_HOURS environment variable.
+    """
+    if interval_hours is None:
+        try:
+            interval_hours = float(os.environ.get("SYNC_INTERVAL_HOURS", "6"))
+        except ValueError:
+            interval_hours = 6.0
+
+    interval_seconds = max(300.0, interval_hours * 3600.0)
+
+    def _sync_worker():
+        time.sleep(15)  # initial delay before first background cycle
+        while True:
+            try:
+                print(f"[OmniBurn] Running background periodic model sync...")
+                res = sync_models()
+                if res.get("changes_count", 0) > 0:
+                    print(f"[OmniBurn] Background sync logged {res['changes_count']} changes.")
+            except Exception as e:
+                print(f"[OmniBurn] Background sync error: {e}")
+            time.sleep(interval_seconds)
+
+    thread = threading.Thread(target=_sync_worker, daemon=True, name="OmniBurnPeriodicSync")
+    thread.start()
+    return thread
+
 def run_server(port=PORT):
+    start_background_sync()
     socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", port), OmniBurnHandler) as httpd:
         print(f"OmniBurn server running at: http://localhost:{port}")
