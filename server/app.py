@@ -8,10 +8,13 @@ import http.server
 import json
 import os
 import socketserver
+import sys
 import threading
 import time
 import urllib.parse
 from datetime import datetime, timezone
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from engine.db import get_connection
 from engine.sync_engine import sync_models, add_model, deprecate_model, restore_model, remove_model
