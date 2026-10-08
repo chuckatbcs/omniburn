@@ -259,8 +259,11 @@
               <th class="py-3 px-3">Provider</th>
               <th class="py-3 px-3">Harness & Pool</th>
               <th class="py-3 px-3">Reasoning</th>
+              <th onclick="toggleSort('cost_pool')" class="py-3 px-3 text-right sortable text-indigo-300 font-bold">
+                <span class="flex items-center justify-end gap-1">Cost / Pool <span id="sortIcon_cost_pool"></span></span>
+              </th>
               <th onclick="toggleSort('tasks_pool')" class="py-3 px-3 text-right sortable">
-                <span class="flex items-center justify-end gap-1">Tasks / Pool <span id="sortIcon_tasks_pool"></span></span>
+                <span class="flex items-center justify-end gap-1">Tasks / Pool (est) <span id="sortIcon_tasks_pool"></span></span>
               </th>
               <th onclick="toggleSort('tasks_month')" class="py-3 px-3 text-right sortable">
                 <span class="flex items-center justify-end gap-1">Tasks / Mo <span id="sortIcon_tasks_month"></span></span>
@@ -270,6 +273,9 @@
               </th>
               <th onclick="toggleSort('api_cost')" class="py-3 px-3 text-right sortable text-blue-300 font-bold">
                 <span class="flex items-center justify-end gap-1">Raw API Cost <span id="sortIcon_api_cost"></span></span>
+              </th>
+              <th onclick="toggleSort('api_value')" class="py-3 px-3 text-right sortable text-purple-300 font-bold">
+                <span class="flex items-center justify-end gap-1">API Val / Pool <span id="sortIcon_api_value"></span></span>
               </th>
               <th onclick="toggleSort('latency')" class="py-3 px-3 text-right sortable">
                 <span class="flex items-center justify-end gap-1">Latency <span id="sortIcon_latency"></span></span>
@@ -575,7 +581,9 @@
             </div>
             <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono">
               <div><span class="text-slate-400">Sub Cost/Task:</span> <strong class="text-emerald-400">$${top.cost_per_completed_task}</strong></div>
-              <div><span class="text-slate-400">Tasks/Pool:</span> <strong class="text-white">${top.tasks_per_pool_cycle}</strong></div>
+              <div><span class="text-slate-400">Cost/Pool:</span> <strong class="text-indigo-300">$${top.cost_per_pool !== null && top.cost_per_pool !== undefined ? Number(top.cost_per_pool).toFixed(2) : '--'}</strong></div>
+              <div><span class="text-slate-400">Tasks/Pool (est):</span> <strong class="text-white">${top.tasks_per_pool_cycle}</strong> <span class="text-[9px] px-1 py-0.2 rounded font-bold ${top.tasks_per_pool_evidence === 'measured' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">${top.tasks_per_pool_evidence === 'measured' ? 'meas' : 'est'}</span></div>
+              <div><span class="text-slate-400">API Val/Pool:</span> <strong class="text-purple-300">$${top.api_value_per_pool !== null && top.api_value_per_pool !== undefined ? Number(top.api_value_per_pool).toFixed(2) : '--'}</strong> <span class="text-[9px] text-slate-500">(${top.leverage ? top.leverage + 'x' : '--'})</span></div>
               <div><span class="text-slate-400">Tokens/Done:</span> <strong class="text-slate-300">${top.success_adjusted_tokens.toLocaleString()}</strong></div>
               <div><span class="text-slate-400">Latency/Done:</span> <strong class="text-slate-300">${top.success_adjusted_seconds}s</strong></div>
             </div>
@@ -605,7 +613,9 @@
               </div>
               <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono">
                 <div><span class="text-slate-400">Sub Cost/Task:</span> <strong class="text-emerald-400">$${runner.cost_per_completed_task}</strong></div>
-                <div><span class="text-slate-400">Tasks/Pool:</span> <strong class="text-white">${runner.tasks_per_pool_cycle}</strong></div>
+                <div><span class="text-slate-400">Cost/Pool:</span> <strong class="text-indigo-300">$${runner.cost_per_pool !== null && runner.cost_per_pool !== undefined ? Number(runner.cost_per_pool).toFixed(2) : '--'}</strong></div>
+                <div><span class="text-slate-400">Tasks/Pool (est):</span> <strong class="text-white">${runner.tasks_per_pool_cycle}</strong> <span class="text-[9px] px-1 py-0.2 rounded font-bold ${runner.tasks_per_pool_evidence === 'measured' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">${runner.tasks_per_pool_evidence === 'measured' ? 'meas' : 'est'}</span></div>
+                <div><span class="text-slate-400">API Val/Pool:</span> <strong class="text-purple-300">$${runner.api_value_per_pool !== null && runner.api_value_per_pool !== undefined ? Number(runner.api_value_per_pool).toFixed(2) : '--'}</strong> <span class="text-[9px] text-slate-500">(${runner.leverage ? runner.leverage + 'x' : '--'})</span></div>
                 <div><span class="text-slate-400">Tokens/Done:</span> <strong class="text-slate-300">${runner.success_adjusted_tokens.toLocaleString()}</strong></div>
                 <div><span class="text-slate-400">Latency/Done:</span> <strong class="text-slate-300">${runner.success_adjusted_seconds}s</strong></div>
               </div>
@@ -673,7 +683,7 @@
     }
 
     function updateSortIcons() {
-      ['name', 'tasks_pool', 'tasks_month', 'sub_cost', 'api_cost', 'latency'].forEach(k => {
+      ['name', 'cost_pool', 'tasks_pool', 'tasks_month', 'sub_cost', 'api_cost', 'api_value', 'latency'].forEach(k => {
         const span = document.getElementById(`sortIcon_${k}`);
         if (!span) return;
         if (k === currentSortKey) {
@@ -725,9 +735,15 @@
         if (currentSortKey === 'sub_cost') {
           valA = a.cost_per_completed_task;
           valB = b.cost_per_completed_task;
+        } else if (currentSortKey === 'cost_pool') {
+          valA = a.cost_per_pool !== null && a.cost_per_pool !== undefined ? a.cost_per_pool : 0;
+          valB = b.cost_per_pool !== null && b.cost_per_pool !== undefined ? b.cost_per_pool : 0;
         } else if (currentSortKey === 'api_cost') {
           valA = a.api_cost_per_task;
           valB = b.api_cost_per_task;
+        } else if (currentSortKey === 'api_value') {
+          valA = a.api_value_per_pool !== null && a.api_value_per_pool !== undefined ? a.api_value_per_pool : 0;
+          valB = b.api_value_per_pool !== null && b.api_value_per_pool !== undefined ? b.api_value_per_pool : 0;
         } else if (currentSortKey === 'tasks_pool') {
           valA = a.tasks_per_pool_cycle;
           valB = b.tasks_per_pool_cycle;
@@ -758,6 +774,22 @@
       tbody.innerHTML = filtered.map(m => {
         const isActive = Boolean(m.is_active);
         const apiRateStr = `$${(m.input_cost_per_m || 0).toFixed(2)} / $${(m.output_cost_per_m || 0).toFixed(2)}`;
+        const evidenceBadge = m.tasks_per_pool_evidence === 'measured'
+          ? '<span class="text-[9px] px-1 py-0.2 rounded font-bold bg-emerald-500/20 text-emerald-300">meas</span>'
+          : '<span class="text-[9px] px-1 py-0.2 rounded font-bold bg-amber-500/20 text-amber-300">est</span>';
+        const rangeStr = (m.tasks_per_pool_low !== null && m.tasks_per_pool_low !== undefined)
+          ? `<div class="text-[9px] text-slate-500 font-mono">${m.tasks_per_pool_low}-${m.tasks_per_pool_high}</div>`
+          : '';
+        const costPoolStr = (m.cost_per_pool !== null && m.cost_per_pool !== undefined)
+          ? `$${Number(m.cost_per_pool).toFixed(2)}`
+          : '--';
+        const apiValStr = (m.api_value_per_pool !== null && m.api_value_per_pool !== undefined)
+          ? `$${Number(m.api_value_per_pool).toFixed(2)}`
+          : '--';
+        const leverageStr = (m.leverage !== null && m.leverage !== undefined)
+          ? `<div class="text-[9px] text-slate-500">${m.leverage}x</div>`
+          : '';
+
         return `
           <tr class="hover:bg-slate-800/40 transition ${isActive ? '' : 'opacity-40'}">
             <td class="py-3 px-3">
@@ -783,7 +815,14 @@
                 ${m.reasoning_effort.toUpperCase()}
               </span>
             </td>
-            <td class="py-3 px-3 text-right font-mono font-bold ${isActive ? 'text-slate-200' : 'text-slate-500'}">${m.tasks_per_pool_cycle}</td>
+            <td class="py-3 px-3 text-right font-mono font-bold ${isActive ? 'text-indigo-300' : 'text-slate-500'}">${costPoolStr}</td>
+            <td class="py-3 px-3 text-right font-mono">
+              <div class="flex items-center justify-end gap-1">
+                <span class="font-bold ${isActive ? 'text-slate-200' : 'text-slate-500'}">${m.tasks_per_pool_cycle}</span>
+                ${evidenceBadge}
+              </div>
+              ${rangeStr}
+            </td>
             <td class="py-3 px-3 text-right font-mono text-slate-300">${m.tasks_per_month.toLocaleString()}</td>
             <td class="py-3 px-3 text-right font-mono font-bold ${isActive ? 'text-emerald-400' : 'text-slate-500'}">
               $${m.cost_per_completed_task.toFixed(4)}
@@ -791,6 +830,10 @@
             <td class="py-3 px-3 text-right font-mono">
               <div class="font-bold ${isActive ? 'text-blue-300' : 'text-slate-500'}">$${(m.api_cost_per_task || 0).toFixed(4)}</div>
               <div class="text-[9px] text-slate-500">${apiRateStr}</div>
+            </td>
+            <td class="py-3 px-3 text-right font-mono">
+              <div class="font-bold ${isActive ? 'text-purple-300' : 'text-slate-500'}">${apiValStr}</div>
+              ${leverageStr}
             </td>
             <td class="py-3 px-3 text-right font-mono text-slate-400">${m.success_adjusted_seconds}s</td>
             <td class="py-3 px-3 text-center">

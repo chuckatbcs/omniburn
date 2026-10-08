@@ -84,6 +84,8 @@ def recommend(tier_id=2, strategy="quota_first", plan_filter=None, db_path=None)
                m.reasoning_effort, m.speed_mode, m.is_frontier,
                p.sub_id, p.pool_name, s.name as sub_name, s.monthly_cost, s.status as sub_status,
                y.tasks_per_pool_cycle, y.tasks_per_month, y.cost_per_completed_task,
+               y.api_cost_per_task, y.cost_per_pool, y.tasks_per_pool_low, y.tasks_per_pool_high,
+               y.tasks_per_pool_evidence, y.api_value_per_pool, y.leverage,
                y.success_adjusted_tokens, y.success_adjusted_seconds,
                y.quota_first_score, y.time_reliability_score, y.recommendation_notes
         FROM model_task_yields y

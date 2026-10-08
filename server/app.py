@@ -36,7 +36,12 @@ def ensure_reconciled_workbook(target_path):
         header_fill = PatternFill(start_color="1F2937", end_color="1F2937", fill_type="solid")
         header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
 
-        headers = ["Model ID", "Display Name", "Provider", "Tier", "Tasks / Pool Cycle", "Tasks / Month", "Cost / Task ($)", "API Cost / Task ($)", "Tokens / Done", "Sec / Done", "Quota Score", "Time Score", "Notes"]
+        headers = [
+            "Model ID", "Display Name", "Provider", "Tier", "Cost / Pool ($)",
+            "Tasks / Pool Cycle", "Evidence", "API Val / Pool ($)", "Tasks / Month",
+            "Cost / Task ($)", "API Cost / Task ($)", "Tokens / Done", "Sec / Done",
+            "Quota Score", "Time Score", "Notes"
+        ]
         ws_yields.append(headers)
         for col_idx in range(1, len(headers) + 1):
             cell = ws_yields.cell(row=1, column=col_idx)
@@ -47,7 +52,8 @@ def ensure_reconciled_workbook(target_path):
         conn = get_connection()
         cur = conn.cursor()
         rows = cur.execute("""
-            SELECT y.model_id, m.display_name, m.provider, y.tier_id, y.tasks_per_pool_cycle,
+            SELECT y.model_id, m.display_name, m.provider, y.tier_id, y.cost_per_pool,
+                   y.tasks_per_pool_cycle, y.tasks_per_pool_evidence, y.api_value_per_pool,
                    y.tasks_per_month, y.cost_per_completed_task, y.api_cost_per_task,
                    y.success_adjusted_tokens, y.success_adjusted_seconds, y.quota_first_score,
                    y.time_reliability_score, y.recommendation_notes
@@ -59,7 +65,8 @@ def ensure_reconciled_workbook(target_path):
         for r in rows:
             ws_yields.append([
                 r["model_id"], r["display_name"], r["provider"], f"Tier {r['tier_id']}",
-                r["tasks_per_pool_cycle"], r["tasks_per_month"], r["cost_per_completed_task"],
+                r["cost_per_pool"], r["tasks_per_pool_cycle"], r["tasks_per_pool_evidence"],
+                r["api_value_per_pool"], r["tasks_per_month"], r["cost_per_completed_task"],
                 r["api_cost_per_task"], r["success_adjusted_tokens"], r["success_adjusted_seconds"],
                 r["quota_first_score"], r["time_reliability_score"], r["recommendation_notes"]
             ])
@@ -248,6 +255,10 @@ class OmniBurnHandler(http.server.SimpleHTTPRequestHandler):
                 order_clause = f"ORDER BY m.is_active DESC, y.tasks_per_month {sort_dir}"
             elif sort_key == "tasks_pool":
                 order_clause = f"ORDER BY m.is_active DESC, y.tasks_per_pool_cycle {sort_dir}"
+            elif sort_key == "cost_pool":
+                order_clause = f"ORDER BY m.is_active DESC, y.cost_per_pool {sort_dir}"
+            elif sort_key == "api_value":
+                order_clause = f"ORDER BY m.is_active DESC, y.api_value_per_pool {sort_dir}"
             elif sort_key == "latency":
                 order_clause = f"ORDER BY m.is_active DESC, y.success_adjusted_seconds {sort_dir}"
             elif sort_key == "tokens":
@@ -267,8 +278,11 @@ class OmniBurnHandler(http.server.SimpleHTTPRequestHandler):
                        m.reasoning_effort, m.speed_mode, m.is_frontier, m.is_active,
                        m.input_cost_per_m, m.output_cost_per_m,
                        y.tier_id, y.tasks_per_pool_cycle, y.tasks_per_month,
-                       y.cost_per_completed_task, y.api_cost_per_task, y.success_adjusted_tokens,
-                       y.success_adjusted_seconds, y.quota_first_score, y.time_reliability_score
+                       y.cost_per_completed_task, y.api_cost_per_task, y.cost_per_pool,
+                       y.tasks_per_pool_low, y.tasks_per_pool_high, y.tasks_per_pool_evidence,
+                       y.api_value_per_pool, y.leverage, y.success_adjusted_tokens,
+                       y.success_adjusted_seconds, y.quota_first_score, y.time_reliability_score,
+                       y.recommendation_notes
                 FROM models m
                 JOIN model_task_yields y ON m.model_id = y.model_id
                 {where_clause}

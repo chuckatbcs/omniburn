@@ -193,6 +193,15 @@ def get_telemetry_metrics(conn, model_id, tier_id):
         "source": "live_telemetry"
     }
 
+from engine.cost_spec import (
+    pool_economics,
+    format_tasks_per_pool,
+    pool_weights,
+    TIER_PROFILE_TOKENS,
+    DEFAULT_MIX,
+    cost_per_pool as spec_cost_per_pool,
+)
+
 def recalculate_all_yields(conn=None):
     close_at_end = False
     if conn is None:
@@ -200,10 +209,26 @@ def recalculate_all_yields(conn=None):
         close_at_end = True
 
     cursor = conn.cursor()
+
+    # Pre-calculate pool weights per subscription
+    cursor.execute("SELECT id, sub_id, pool_weight FROM quota_pools;")
+    all_pools = cursor.fetchall()
+    subs_pools = {}
+    explicit_weights = {}
+    for p in all_pools:
+        subs_pools.setdefault(p["sub_id"], []).append(p["id"])
+        if p["pool_weight"] is not None:
+            explicit_weights[p["id"]] = float(p["pool_weight"])
+    
+    computed_weights = {}
+    for sub_id, p_ids in subs_pools.items():
+        sub_weights = pool_weights(p_ids, explicit_weights)
+        computed_weights.update(sub_weights)
+
     cursor.execute("""
         SELECT m.model_id, m.display_name, m.provider, m.harness, m.pool_id,
                m.input_cost_per_m, m.output_cost_per_m, m.reasoning_effort, m.speed_mode,
-               p.sub_id, p.reset_window_hours, p.window_type, s.monthly_cost
+               p.sub_id, p.reset_window_hours, p.window_type, p.ui_granularity_pct, s.monthly_cost
         FROM models m
         LEFT JOIN quota_pools p ON m.pool_id = p.id
         LEFT JOIN subscriptions s ON p.sub_id = s.id
@@ -211,21 +236,27 @@ def recalculate_all_yields(conn=None):
     models = cursor.fetchall()
 
     for m in models:
+        p_weight = computed_weights.get(m["pool_id"], 1.0)
         for tier_id in [1, 2, 3, 4]:
-            calc = compute_model_tier_yield(m, tier_id, conn=conn)
+            calc = compute_model_tier_yield(m, tier_id, conn=conn, pool_weight=p_weight)
             cursor.execute("""
                 INSERT OR REPLACE INTO model_task_yields (
                     model_id, tier_id, tasks_per_pool_cycle, tasks_per_month,
                     cost_per_completed_task, api_cost_per_task, success_adjusted_tokens,
                     success_adjusted_seconds, quota_first_score,
-                    time_reliability_score, recommendation_notes
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+                    time_reliability_score, recommendation_notes,
+                    cost_per_pool, tasks_per_pool_low, tasks_per_pool_high,
+                    tasks_per_pool_evidence, api_value_per_pool, leverage
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
             """, (
                 m["model_id"], tier_id, calc["tasks_per_pool_cycle"],
                 calc["tasks_per_month"], calc["cost_per_completed_task"],
                 calc["api_cost_per_task"], calc["success_adjusted_tokens"],
                 calc["success_adjusted_seconds"], calc["quota_first_score"],
-                calc["time_reliability_score"], calc["notes"]
+                calc["time_reliability_score"], calc["notes"],
+                calc.get("cost_per_pool"), calc.get("tasks_per_pool_low"),
+                calc.get("tasks_per_pool_high"), calc.get("tasks_per_pool_evidence"),
+                calc.get("api_value_per_pool"), calc.get("leverage")
             ))
 
     conn.commit()
@@ -233,17 +264,18 @@ def recalculate_all_yields(conn=None):
         conn.close()
     print("Recalculated yields and API benchmark costs across all models and tiers.")
 
-def compute_model_tier_yield(model, tier_id, conn=None):
-    model_id = model["model_id"]
-    sub_cost = model["monthly_cost"] or 20.0
-    pool_id = model["pool_id"] or ""
-    window_hours = model["reset_window_hours"] or 5.0
-    window_type = model["window_type"] or "rolling_5h"
+def compute_model_tier_yield(model, tier_id, conn=None, pool_weight=1.0):
+    m_dict = dict(model) if hasattr(model, "keys") else model
+    model_id = m_dict["model_id"]
+    sub_cost = m_dict["monthly_cost"] if m_dict.get("monthly_cost") is not None else 20.0
+    pool_id = m_dict.get("pool_id") or ""
+    window_hours = m_dict.get("reset_window_hours") or 5.0
+    window_type = m_dict.get("window_type") or "rolling_5h"
+    granularity = float(m_dict.get("ui_granularity_pct") or 1.0)
     spec = TIER_SPECS[tier_id]
 
-    # API costs per token
-    in_per_token = (model["input_cost_per_m"] or 0.0) / 1000000.0
-    out_per_token = (model["output_cost_per_m"] or 0.0) / 1000000.0
+    in_cost = float(m_dict.get("input_cost_per_m") or 0.0)
+    out_cost = float(m_dict.get("output_cost_per_m") or 0.0)
 
     # 1. Primary: Check live empirical telemetry runs
     live_emp = get_telemetry_metrics(conn, model_id, tier_id)
@@ -256,130 +288,101 @@ def compute_model_tier_yield(model, tier_id, conn=None):
         emp = EMPIRICAL_V7[(model_id, tier_id)]
         is_live = False
 
+    completed = None
+    attempts = None
+    tokens_completed = None
+    seconds = None
+    weekly_delta = None
+    five_hour_delta = None
+    fp = 0.88 if tier_id <= 2 else 0.58
+
     if emp:
-        tasks_per_1pct = emp["tasks_per_1pct"]
-        tasks_per_pool_cycle = tasks_per_1pct * 100.0
-        
-        # Monthly tasks extrapolation based on 40 working 5h periods (2 pools/day * 20 workdays)
-        if window_type == "rolling_5h":
-            periods_per_month = 40.0
-            tasks_per_month = tasks_per_pool_cycle * (periods_per_month / 10.0)
-        else:
-            tasks_per_month = tasks_per_pool_cycle
-        
-        cost_per_task = sub_cost / max(1.0, tasks_per_month)
-        tokens = emp["tokens_per_completed"]
-        seconds = emp["sec_per_completed"]
         fp = emp["first_pass_rate"]
-        att_per_done = emp.get("att_per_done", 1.1)
-
-        # Raw API benchmark cost:
-        # Approximate input/output split from empirical runs (typically 82% input, 18% output)
-        api_in_tokens = tokens * 0.82
-        api_out_tokens = tokens * 0.18
-        raw_api_cost = (api_in_tokens * in_per_token) + (api_out_tokens * out_per_token)
-
-        # Scores (normalized 0 to 100)
-        quota_multiplier = 5.0 if tier_id <= 3 else 15.0
-        quota_score = min(100.0, tasks_per_1pct * quota_multiplier)
-        sec_divisor = 5.0 if tier_id <= 3 else (spec["base_sec"] / 10.0)
-        time_score = max(0.0, 100.0 - (seconds / sec_divisor)) * fp
-
-        if is_live:
-            notes = f"Live telemetry (N={emp['sample_size']} runs): {tasks_per_1pct} tasks/1% visible, {fp*100:.0f}% 1st-pass, {seconds:.1f}s/done."
-        else:
-            notes = f"Empirical v7 prior: {tasks_per_1pct} tasks/1% visible, {fp*100:.0f}% 1st-pass, {seconds:.1f}s/done."
-
-        return {
-            "tasks_per_pool_cycle": round(tasks_per_pool_cycle, 1),
-            "tasks_per_month": round(tasks_per_month, 0),
-            "cost_per_completed_task": round(cost_per_task, 4),
-            "api_cost_per_task": round(raw_api_cost, 4),
-            "success_adjusted_tokens": int(tokens),
-            "success_adjusted_seconds": round(seconds, 1),
-            "quota_first_score": round(quota_score, 1),
-            "time_reliability_score": round(time_score, 1),
-            "notes": notes
-        }
-
-    # Generalized estimation for other models / tiers
-    base_in = spec["in"]
-    base_out = spec["out"]
-    base_sec = spec["base_sec"]
-    
-    # Reasoning multiplier
-    reasoning = model["reasoning_effort"] or "medium"
-    if reasoning == "high":
-        mult_tokens = 1.3
-        mult_time = 1.5
-        est_fp = 0.92 if tier_id <= 2 else 0.72
-    elif reasoning == "low":
-        mult_tokens = 0.8
-        mult_time = 0.7
-        est_fp = 0.85 if tier_id <= 2 else 0.48
+        tokens_completed = float(emp["tokens_per_completed"])
+        seconds = float(emp["sec_per_completed"])
+        completed = float(emp.get("sample_size", 20.0))
+        att_per_done = float(emp.get("att_per_done", 1.1))
+        attempts = completed * att_per_done
+        tasks_per_1pct = float(emp["tasks_per_1pct"])
+        if tasks_per_1pct > 0:
+            weekly_delta = completed / tasks_per_1pct
+            five_hour_delta = weekly_delta
     else:
-        mult_tokens = 1.0
-        mult_time = 1.0
-        est_fp = 0.88 if tier_id <= 2 else 0.58
-
-    att_per_done = 1.0 / est_fp if est_fp > 0 else 2.0
-    tokens = int((base_in + base_out) * mult_tokens * att_per_done)
-    seconds = round(base_sec * mult_time * att_per_done, 1)
-
-    # Raw API benchmark cost:
-    raw_api_cost = ((base_in * mult_tokens * in_per_token) + (base_out * mult_tokens * out_per_token)) * att_per_done
-
-    # Capacity estimation by pool
-    if "gemini" in pool_id:
-        if "flash" in model_id:
-            scale = 18.0 if tier_id <= 2 else (3.0 if tier_id == 3 else 0.5)
+        # Generalized estimation tokens & seconds
+        reasoning = m_dict.get("reasoning_effort") or "medium"
+        if reasoning == "high":
+            mult_tokens = 1.3
+            mult_time = 1.5
+            fp = 0.92 if tier_id <= 2 else 0.72
+        elif reasoning == "low":
+            mult_tokens = 0.8
+            mult_time = 0.7
+            fp = 0.85 if tier_id <= 2 else 0.48
         else:
-            scale = 3.5 if tier_id <= 3 else 1.2
-        tasks_per_pool_cycle = scale * 100.0 / (tier_id * 1.5)
-        tasks_per_month = tasks_per_pool_cycle * 4.0
-    elif "cursor_models" in pool_id:
-        mode = model["speed_mode"] or "normal"
-        burn_mult = 6.0 if mode == "fast" else 1.0
-        scale = (500.0 / burn_mult) if tier_id <= 2 else (200.0 / burn_mult)
-        tasks_per_month = max(5.0, scale / (tier_id * 1.0))
-        tasks_per_pool_cycle = tasks_per_month
-    elif "other_models" in pool_id:
-        tasks_per_month = max(5.0, 150.0 / (tier_id * 1.2))
-        tasks_per_pool_cycle = tasks_per_month
-    elif "chatgpt" in pool_id:
-        if "astra" in model_id:
-            cap_5h = 15.0 / tier_id
-        elif "sol" in model_id:
-            cap_5h = 45.0 / tier_id
-        elif "terra" in model_id:
-            cap_5h = 80.0 / tier_id
-        else:
-            cap_5h = 200.0 / tier_id
-        tasks_per_pool_cycle = cap_5h
-        tasks_per_month = cap_5h * 30.0
-    elif "free" in pool_id or sub_cost == 0:
-        tasks_per_pool_cycle = 50.0 / tier_id
-        tasks_per_month = 1500.0 / tier_id
+            mult_tokens = 1.0
+            mult_time = 1.0
+            fp = 0.88 if tier_id <= 2 else 0.58
+
+        att_per_done = 1.0 / fp if fp > 0 else 2.0
+        tokens_completed = float(TIER_PROFILE_TOKENS[tier_id] * mult_tokens * att_per_done)
+        seconds = round(spec["base_sec"] * mult_time * att_per_done, 1)
+
+    # Call standardized pool_economics
+    econ = pool_economics(
+        tier=tier_id,
+        monthly_price=sub_cost,
+        pool_weight=pool_weight,
+        window_type=window_type,
+        input_rate=in_cost,
+        output_rate=out_cost,
+        speed=m_dict.get("speed_mode"),
+        completed=completed,
+        attempts=attempts,
+        tokens_per_completed=tokens_completed,
+        weekly_delta_pct=weekly_delta,
+        five_hour_delta_pct=five_hour_delta,
+        granularity_pct=granularity
+    )
+
+    tasks_per_pool_cycle = econ["tasks_per_pool"] or 50.0
+    cycles = econ["pool_cycles_per_month"] or 4.0
+    tasks_per_month = tasks_per_pool_cycle * cycles
+    cost_per_task = econ["sub_cost_per_task"] if econ["sub_cost_per_task"] is not None else 0.0
+    raw_api_cost = econ["api_cost_per_task"] or 0.0
+
+    # Scores
+    quota_multiplier = 5.0 if tier_id <= 3 else 15.0
+    if emp:
+        quota_score = min(100.0, float(emp["tasks_per_1pct"]) * quota_multiplier)
     else:
-        tasks_per_pool_cycle = 50.0
-        tasks_per_month = 200.0
+        quota_score = min(80.0, tasks_per_pool_cycle / (tier_id * 5.0))
+    sec_divisor = 5.0 if tier_id <= 3 else (spec["base_sec"] / 10.0)
+    time_score = max(0.0, 100.0 - (seconds / sec_divisor)) * fp
 
-    cost_per_task = sub_cost / max(1.0, tasks_per_month)
-    quota_score = min(100.0, tasks_per_pool_cycle / (tier_id * 5.0))
-    sec_div = 8.0 if tier_id <= 3 else (spec["base_sec"] / 10.0)
-    time_score = max(0.0, 100.0 - (seconds / sec_div)) * est_fp
+    formatted_tpp = format_tasks_per_pool(econ)
+    if is_live:
+        notes = f"Live telemetry (N={emp['sample_size']}): {formatted_tpp} tasks/pool, {fp*100:.0f}% 1st-pass, {seconds:.1f}s/done."
+    elif emp:
+        notes = f"Empirical v7 prior: {formatted_tpp} tasks/pool, {fp*100:.0f}% 1st-pass, {seconds:.1f}s/done."
+    else:
+        notes = f"Estimated: {formatted_tpp} tasks/pool, {fp*100:.0f}% est 1st-pass, {seconds:.1f}s/done."
 
-    notes = f"Estimated model tier yield: {est_fp*100:.0f}% est 1st-pass, {seconds:.1f}s success-adjusted."
     return {
         "tasks_per_pool_cycle": round(tasks_per_pool_cycle, 1),
         "tasks_per_month": round(tasks_per_month, 0),
         "cost_per_completed_task": round(cost_per_task, 4),
         "api_cost_per_task": round(raw_api_cost, 4),
-        "success_adjusted_tokens": tokens,
-        "success_adjusted_seconds": seconds,
+        "success_adjusted_tokens": int(tokens_completed),
+        "success_adjusted_seconds": round(seconds, 1),
         "quota_first_score": round(quota_score, 1),
         "time_reliability_score": round(time_score, 1),
-        "notes": notes
+        "notes": notes,
+        "cost_per_pool": round(econ["cost_per_pool"], 4) if econ["cost_per_pool"] is not None else None,
+        "tasks_per_pool_low": round(econ["tasks_per_pool_low"], 1) if econ.get("tasks_per_pool_low") is not None else None,
+        "tasks_per_pool_high": round(econ["tasks_per_pool_high"], 1) if econ.get("tasks_per_pool_high") is not None else None,
+        "tasks_per_pool_evidence": econ.get("tasks_per_pool_evidence"),
+        "api_value_per_pool": round(econ["api_value_per_pool"], 4) if econ.get("api_value_per_pool") is not None else None,
+        "leverage": round(econ["leverage"], 2) if econ.get("leverage") is not None else None,
     }
 
 if __name__ == "__main__":

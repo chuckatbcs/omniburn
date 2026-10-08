@@ -101,17 +101,27 @@ def cmd_recommend(args):
         print("==========================================================================\n")
         return
 
+    tpp_badge = top.get('tasks_per_pool_evidence') or 'est'
+    top_tpp = f"{top['tasks_per_pool_cycle']} [{tpp_badge}]"
+    if top.get('tasks_per_pool_low') and top.get('tasks_per_pool_high'):
+        top_tpp += f" ({top['tasks_per_pool_low']:.0f}-{top['tasks_per_pool_high']:.0f})"
+    top_cost_pool = f"${top['cost_per_pool']:.2f}" if top.get('cost_per_pool') is not None else "N/A"
+    top_api_val = f"${top['api_value_per_pool']:.2f}" if top.get('api_value_per_pool') is not None else "N/A"
+
     print(f"🏆 TOP CHOICE:    {top['display_name']}")
-    print(f"   Harness/Pool:  {top['harness']} ({top['pool_name'] or 'Default'})")
-    print(f"   Tasks/Pool:    {top['tasks_per_pool_cycle']} tasks per 100% reset cycle")
+    print(f"   Harness/Pool:  {top['harness']} ({top['pool_name'] or 'Default'}) | Cost/Pool: {top_cost_pool}")
+    print(f"   Tasks/Pool:    {top_tpp} per 100% reset cycle (API Value/Pool: {top_api_val})")
     print(f"   Sub Cost/Task: ${top['cost_per_completed_task']} per completed task")
     print(f"   Success-Adj:   {top['success_adjusted_seconds']}s | {top['success_adjusted_tokens']:,} tokens per completed task")
     print(f"   Notes:         {top['recommendation_notes']}")
 
     if runner:
+        run_badge = runner.get('tasks_per_pool_evidence') or 'est'
+        run_tpp = f"{runner['tasks_per_pool_cycle']} [{run_badge}]"
+        run_cost_pool = f"${runner['cost_per_pool']:.2f}" if runner.get('cost_per_pool') is not None else "N/A"
         print(f"\n🥈 RUNNER UP:     {runner['display_name']}")
-        print(f"   Harness/Pool:  {runner['harness']}")
-        print(f"   Tasks/Pool:    {runner['tasks_per_pool_cycle']} tasks")
+        print(f"   Harness/Pool:  {runner['harness']} | Cost/Pool: {run_cost_pool}")
+        print(f"   Tasks/Pool:    {run_tpp}")
         print(f"   Sub Cost/Task: ${runner['cost_per_completed_task']}")
         print(f"   Success-Adj:   {runner['success_adjusted_seconds']}s | {runner['success_adjusted_tokens']:,} tokens")
 
@@ -208,10 +218,14 @@ def cmd_models(args):
     sort_order = "m.is_active DESC, y.tier_id ASC, y.quota_first_score DESC"
     if args.sort == "cost":
         sort_order = "m.is_active DESC, y.cost_per_completed_task ASC"
+    elif args.sort == "cost-pool":
+        sort_order = "m.is_active DESC, y.cost_per_pool ASC"
     elif args.sort == "api-cost":
         sort_order = "m.is_active DESC, y.api_cost_per_task ASC"
     elif args.sort == "tasks":
         sort_order = "m.is_active DESC, y.tasks_per_pool_cycle DESC"
+    elif args.sort == "api-value":
+        sort_order = "m.is_active DESC, y.api_value_per_pool DESC"
     elif args.sort == "latency":
         sort_order = "m.is_active DESC, y.success_adjusted_seconds ASC"
     elif args.sort == "tokens":
@@ -233,7 +247,8 @@ def cmd_models(args):
         SELECT m.model_id, m.display_name, m.provider, m.harness, m.is_active,
                m.input_cost_per_m, m.output_cost_per_m,
                y.tier_id, y.tasks_per_pool_cycle, y.cost_per_completed_task,
-               y.api_cost_per_task, y.success_adjusted_seconds
+               y.api_cost_per_task, y.success_adjusted_seconds,
+               y.cost_per_pool, y.tasks_per_pool_evidence, y.api_value_per_pool
         FROM models m
         JOIN model_task_yields y ON m.model_id = y.model_id
         {where_clause}
@@ -242,17 +257,24 @@ def cmd_models(args):
     rows = cursor.fetchall()
     conn.close()
 
-    print("\n=================================================================================================================================")
+    print("\n==========================================================================================================================================================")
     sort_label = f"SORTED BY: {args.sort.upper()}"
     tier_label = f" (TIER {args.tier})" if args.tier else " (ALL TIERS)"
-    print(f"                               OMNIBURN TRACKED MODELS & COSTS — {sort_label}{tier_label}                          ")
-    print("=================================================================================================================================")
-    print(f"{'Model Name':<28} | {'Provider':<13} | {'Harness / Route':<22} | {'Tier':<6} | {'Sub Cost/Task':<14} | {'Raw API Cost':<13} | {'Status'}")
-    print("---------------------------------------------------------------------------------------------------------------------------------")
+    print(f"                                      OMNIBURN TRACKED MODELS, POOLS & COSTS — {sort_label}{tier_label}                          ")
+    print("==========================================================================================================================================================")
+    print(f"{'Model Name':<28} | {'Provider':<10} | {'Tier':<6} | {'Tasks/Pool (est)':<18} | {'Cost/Pool':<10} | {'Sub $/Task':<11} | {'Raw API $/Tk':<12} | {'API Val/Pool':<12} | {'Status'}")
+    print("----------------------------------------------------------------------------------------------------------------------------------------------------------")
     for r in rows:
         st = "ACTIVE" if r["is_active"] else "OFF"
-        print(f"{r['display_name']:<28} | {r['provider']:<13} | {r['harness']:<22} | Tier {r['tier_id']} | ${r['cost_per_completed_task']:>11.4f}  | ${r['api_cost_per_task']:>10.4f}  | [{st}]")
-    print("=================================================================================================================================\n")
+        ev = r["tasks_per_pool_evidence"] or "est"
+        badge = "meas" if ev == "measured" else "est"
+        tpp_str = f"{r['tasks_per_pool_cycle']:>7.1f} [{badge}]"
+        cpp_str = f"${r['cost_per_pool']:>7.2f}" if r["cost_per_pool"] is not None else "     N/A"
+        sub_str = f"${r['cost_per_completed_task']:>9.4f}"
+        api_str = f"${r['api_cost_per_task']:>10.4f}" if r["api_cost_per_task"] is not None else "       N/A"
+        val_str = f"${r['api_value_per_pool']:>10.2f}" if r["api_value_per_pool"] is not None else "       N/A"
+        print(f"{r['display_name'][:28]:<28} | {r['provider'][:10]:<10} | Tier {r['tier_id']} | {tpp_str:<18} | {cpp_str:<10} | {sub_str:<11} | {api_str:<12} | {val_str:<12} | [{st}]")
+    print("==========================================================================================================================================================\n")
 
 def cmd_log(args):
     res = log_task_run(

@@ -13,6 +13,34 @@ from engine.recommender import recommend
 from engine.telemetry_logger import log_task_run, get_telemetry_summary
 
 class TestOmniBurn(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        import time, socketserver, threading
+        from server.app import OmniBurnHandler
+        cls._server_thread = None
+        cls._httpd = None
+        try:
+            with urllib.request.urlopen("http://localhost:8787/api/status", timeout=1) as res:
+                return
+        except Exception:
+            pass
+        try:
+            socketserver.TCPServer.allow_reuse_address = True
+            cls._httpd = socketserver.TCPServer(("", 8787), OmniBurnHandler)
+            cls._server_thread = threading.Thread(target=cls._httpd.serve_forever, daemon=True)
+            cls._server_thread.start()
+            time.sleep(0.3)
+        except Exception as e:
+            print(f"Could not start local test server on 8787: {e}")
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls._httpd:
+            try:
+                cls._httpd.shutdown()
+            except Exception:
+                pass
+
     def test_database_tables(self):
         conn = get_connection()
         cursor = conn.cursor()

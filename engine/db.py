@@ -156,10 +156,27 @@ def init_db(db_path=None, conn=None):
     """)
 
     # Dynamic migrations for existing databases
+    cursor.execute("PRAGMA table_info(quota_pools);")
+    qp_cols = [c[1] for c in cursor.fetchall()]
+    if "pool_weight" not in qp_cols:
+        cursor.execute("ALTER TABLE quota_pools ADD COLUMN pool_weight REAL;")
+
     cursor.execute("PRAGMA table_info(model_task_yields);")
     mty_cols = [c[1] for c in cursor.fetchall()]
     if "api_cost_per_task" not in mty_cols:
         cursor.execute("ALTER TABLE model_task_yields ADD COLUMN api_cost_per_task REAL;")
+    if "cost_per_pool" not in mty_cols:
+        cursor.execute("ALTER TABLE model_task_yields ADD COLUMN cost_per_pool REAL;")
+    if "tasks_per_pool_low" not in mty_cols:
+        cursor.execute("ALTER TABLE model_task_yields ADD COLUMN tasks_per_pool_low REAL;")
+    if "tasks_per_pool_high" not in mty_cols:
+        cursor.execute("ALTER TABLE model_task_yields ADD COLUMN tasks_per_pool_high REAL;")
+    if "tasks_per_pool_evidence" not in mty_cols:
+        cursor.execute("ALTER TABLE model_task_yields ADD COLUMN tasks_per_pool_evidence TEXT;")
+    if "api_value_per_pool" not in mty_cols:
+        cursor.execute("ALTER TABLE model_task_yields ADD COLUMN api_value_per_pool REAL;")
+    if "leverage" not in mty_cols:
+        cursor.execute("ALTER TABLE model_task_yields ADD COLUMN leverage REAL;")
 
     cursor.execute("PRAGMA table_info(telemetry_runs);")
     tr_cols = [c[1] for c in cursor.fetchall()]
