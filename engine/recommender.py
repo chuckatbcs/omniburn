@@ -11,6 +11,10 @@ from engine.db import get_connection
 
 def _canonical_family(model_id: str, display_name: str) -> str:
     text = f"{display_name} {model_id}".lower()
+    if "haiku" in text:
+        return "claude-haiku"
+    if "cursor-small" in text or "cursor small" in text:
+        return "cursor-small"
     if "grok" in text:
         return "xai-grok"
     if "opus" in text:
@@ -33,6 +37,16 @@ def _canonical_family(model_id: str, display_name: str) -> str:
         return "gpt-terra"
     if "luna" in text:
         return "gpt-luna"
+    if "deepseek" in text and ("r1" in text or "reasoner" in text):
+        return "deepseek-reasoner"
+    if "deepseek" in text:
+        return "deepseek-chat"
+    if "codestral" in text:
+        return "mistral-codestral"
+    if "mistral" in text:
+        return "mistral-large"
+    if "qwen" in text:
+        return "qwen-coder"
     if "o1" in text:
         return "openai-o1"
     if "o3" in text:
@@ -54,10 +68,10 @@ def _canonical_family(model_id: str, display_name: str) -> str:
 # Tier 3 (Long-Horizon Multi-file Feature): Deep reasoning, long-context engineering models.
 # Tier 4 (Heavy Agentic / Repo-Scale Architecture / Massive Context): Strictly frontier agentic and deliberative models.
 TIER_CAPABILITY_GATES = {
-    1: {"gemini-flash", "cursor-composer", "gpt-luna", "gpt-terra", "openai-o3", "claude-sonnet", "gpt-oss", "gemini-pro", "gpt-sol"},
-    2: {"gemini-flash", "cursor-composer", "gpt-terra", "gpt-luna", "gpt-sol", "claude-sonnet", "gemini-pro", "xai-grok", "gpt-astra", "claude-opus"},
-    3: {"claude-sonnet", "gemini-pro", "gpt-sol", "xai-grok", "claude-opus", "claude-fable", "gpt-astra"},
-    4: {"claude-opus", "gpt-astra", "claude-fable", "gemini-pro", "gpt-sol"},
+    1: {"claude-haiku", "gemini-flash", "cursor-composer", "cursor-small", "gpt-luna", "gpt-terra", "openai-o3", "claude-sonnet", "gpt-oss", "gemini-pro", "gpt-sol", "deepseek-chat", "mistral-codestral", "qwen-coder", "gpt-4o"},
+    2: {"claude-haiku", "gemini-flash", "cursor-composer", "gpt-terra", "gpt-luna", "gpt-sol", "claude-sonnet", "gemini-pro", "xai-grok", "gpt-astra", "claude-opus", "deepseek-chat", "deepseek-reasoner", "mistral-codestral", "mistral-large", "qwen-coder", "openai-o1", "openai-o3", "gpt-4o"},
+    3: {"claude-sonnet", "gemini-pro", "gpt-sol", "xai-grok", "claude-opus", "claude-fable", "gpt-astra", "deepseek-reasoner", "openai-o1", "mistral-large"},
+    4: {"claude-opus", "gpt-astra", "claude-fable", "gemini-pro", "gpt-sol", "deepseek-reasoner", "openai-o1"},
 }
 
 

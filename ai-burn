@@ -223,7 +223,9 @@ def cmd_models(args):
     if args.tier:
         filters.append(f"y.tier_id = {args.tier}")
     if args.provider:
-        filters.append(f"LOWER(m.provider) LIKE '%{args.provider.lower()}%'")
+        filters.append(f"(LOWER(m.provider) LIKE '%{args.provider.lower()}%' OR LOWER(m.harness) LIKE '%{args.provider.lower()}%')")
+    if hasattr(args, "harness") and args.harness:
+        filters.append(f"LOWER(m.harness) LIKE '%{args.harness.lower()}%'")
 
     where_clause = f"WHERE {' AND '.join(filters)}" if filters else ""
 
@@ -406,6 +408,7 @@ def main():
     mod_parser.add_argument("--sort", choices=["default", "cost", "api-cost", "tasks", "latency", "tokens", "name"], default="default", help="Sort order")
     mod_parser.add_argument("--tier", type=int, choices=[1, 2, 3, 4], default=2, help="Filter by tier (1-4)")
     mod_parser.add_argument("--provider", help="Filter by provider (e.g. OpenAI, Google, Anthropic, Cursor, xAI)")
+    mod_parser.add_argument("--harness", help="Filter by harness (e.g. Cursor, Antigravity, ChatGPT, Ollama)")
 
     # log
     log_parser = subparsers.add_parser("log", help="Log task execution and decrement quota")

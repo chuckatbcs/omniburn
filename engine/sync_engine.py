@@ -285,6 +285,15 @@ def sync_models(db_path=None):
     openrouter_list = fetch_openrouter_models()
     for rm in openrouter_list:
         rm_id = rm.get("id", "")
+        if not rm_id:
+            continue
+
+        # Skip noise variants / batch / free mirrors / experimental test endpoints
+        if any(rm_id.endswith(suffix) for suffix in [":batch", ":free", ":online", ":extended", ":nitro"]):
+            continue
+        if rm_id.startswith("~"):
+            continue
+
         pricing = rm.get("pricing", {})
         try:
             in_cost = float(pricing.get("prompt", 0)) * 1000000.0
@@ -293,19 +302,87 @@ def sync_models(db_path=None):
             in_cost, out_cost = 0.0, 0.0
 
         # Check if model is relevant to our tracked stack
+        provider = None
         relevant_pool = None
         harness = None
-        if "anthropic/claude" in rm_id:
-            relevant_pool = "other_models"
-            harness = "Cursor (Other Models)"
-        elif "x-ai/grok" in rm_id:
-            relevant_pool = "cursor_models"
-            harness = "Cursor (Cursor Models)"
-        elif "openai/gpt" in rm_id:
-            relevant_pool = "chatgpt_local"
-            harness = "ChatGPT / Codex"
+        lower_id = rm_id.lower()
 
-        if relevant_pool and rm_id in existing_models:
+        if "anthropic/claude" in lower_id:
+            provider = "Anthropic"
+            relevant_pool = "other_models"
+            harness = "Cursor IDE"
+        elif "x-ai/grok" in lower_id:
+            provider = "xAI"
+            relevant_pool = "cursor_models"
+            harness = "Cursor IDE"
+        elif any(lower_id.startswith(p) for p in ["openai/gpt", "openai/o1", "openai/o3"]):
+            provider = "OpenAI"
+            relevant_pool = "other_models"
+            harness = "Cursor IDE"
+        elif lower_id.startswith("deepseek/"):
+            provider = "DeepSeek"
+            relevant_pool = "other_models"
+            harness = "Cursor IDE"
+        elif lower_id.startswith("google/"):
+            provider = "Google"
+            relevant_pool = "other_models"
+            harness = "Cursor IDE"
+        elif lower_id.startswith("mistralai/"):
+            provider = "Mistral"
+            relevant_pool = "other_models"
+            harness = "Cursor IDE"
+        elif lower_id.startswith("qwen/"):
+            provider = "Qwen"
+            relevant_pool = "other_models"
+            harness = "Cursor IDE"
+
+        if not relevant_pool:
+            continue
+
+        if rm_id not in existing_models:
+            ctx = int(rm.get("context_length") or 128000)
+            raw_name = rm.get("name") or rm_id.split("/")[-1]
+            disp_name = f"{raw_name} (Cursor)"
+
+            if any(k in lower_id for k in ["haiku", "flash", "mini", "luna", "small"]):
+                reasoning = "low"
+                speed = "fast"
+                is_front = 1 if any(v in lower_id for v in ["5.5", "4.5", "3.8", "3.5"]) else 0
+            elif any(k in lower_id for k in ["opus", "o1", "r1", "reasoner", "high"]):
+                reasoning = "high"
+                speed = "normal"
+                is_front = 1
+            else:
+                reasoning = "medium"
+                speed = "normal"
+                is_front = 1 if any(v in lower_id for v in ["sonnet", "gpt-5", "gpt-6", "v3", "v4", "pro"]) else 0
+
+            cursor.execute("""
+                INSERT INTO models (
+                    model_id, display_name, provider, harness, pool_id,
+                    context_window, input_cost_per_m, output_cost_per_m,
+                    reasoning_effort, speed_mode, is_frontier,
+                    is_active, last_seen
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?);
+            """, (
+                rm_id, disp_name, provider, harness, relevant_pool,
+                ctx, in_cost, out_cost,
+                reasoning, speed, is_front,
+                now_iso
+            ))
+            event_detail = f"Discovered frontier model via OpenRouter: {disp_name} (${in_cost:.2f}/${out_cost:.2f} per M)"
+            cursor.execute("""
+                INSERT INTO model_changelog (timestamp, event_type, model_id, details)
+                VALUES (?, 'NEW_MODEL', ?, ?);
+            """, (now_iso, rm_id, event_detail))
+            changes_logged.append({"event": "NEW_MODEL", "model_id": rm_id, "name": disp_name})
+            existing_models[rm_id] = {
+                "input_cost_per_m": in_cost,
+                "output_cost_per_m": out_cost,
+                "is_active": 1,
+                "harness": harness
+            }
+        else:
             old = existing_models[rm_id]
             # Price change check
             if abs(old["input_cost_per_m"] - in_cost) > 0.05 or abs(old["output_cost_per_m"] - out_cost) > 0.05:
@@ -320,6 +397,39 @@ def sync_models(db_path=None):
                     VALUES (?, 'PRICE_CHANGE', ?, ?);
                 """, (now_iso, rm_id, details))
                 changes_logged.append({"event": "PRICE_CHANGE", "model_id": rm_id, "details": details})
+            cursor.execute("UPDATE models SET last_seen = ? WHERE model_id = ?", (now_iso, rm_id))
+
+        # Check for correlated local alias in existing_models to keep price synced
+        alias_map = {
+            "anthropic/claude-haiku-5.5": "claude-haiku-5.5-cursor",
+            "anthropic/claude-haiku-4.5": "claude-haiku-4.5-cursor",
+            "anthropic/claude-3.5-haiku": "claude-3-5-haiku",
+            "anthropic/claude-3-5-haiku": "claude-3-5-haiku",
+            "anthropic/claude-sonnet-5.5": "claude-sonnet-5-5-cursor",
+            "anthropic/claude-opus-5.5": "claude-opus-5-5",
+            "deepseek/deepseek-r1": "deepseek-r1-cursor",
+            "deepseek/deepseek-chat": "deepseek-v3-cursor",
+            "openai/gpt-4o": "gpt-4o-cursor",
+            "openai/gpt-4o-mini": "gpt-4o-mini-cursor",
+            "openai/o1": "o1-cursor",
+            "openai/o3-mini": "o3-mini-cursor"
+        }
+        if rm_id in alias_map:
+            alias_id = alias_map[rm_id]
+            if alias_id in existing_models:
+                alias_old = existing_models[alias_id]
+                if abs(alias_old["input_cost_per_m"] - in_cost) > 0.05 or abs(alias_old["output_cost_per_m"] - out_cost) > 0.05:
+                    cursor.execute("""
+                        UPDATE models
+                        SET input_cost_per_m = ?, output_cost_per_m = ?, last_seen = ?
+                        WHERE model_id = ?
+                    """, (in_cost, out_cost, now_iso, alias_id))
+                    details = f"Price synced for alias {alias_id}: In ${alias_old['input_cost_per_m']:.2f} -> ${in_cost:.2f}, Out ${alias_old['output_cost_per_m']:.2f} -> ${out_cost:.2f}"
+                    cursor.execute("""
+                        INSERT INTO model_changelog (timestamp, event_type, model_id, details)
+                        VALUES (?, 'PRICE_CHANGE', ?, ?);
+                    """, (now_iso, alias_id, details))
+                    changes_logged.append({"event": "PRICE_CHANGE", "model_id": alias_id, "details": details})
 
     conn.commit()
 
